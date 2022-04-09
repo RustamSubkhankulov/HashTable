@@ -87,7 +87,7 @@ int _list_draw_graph(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     FILE* graph = fopen(LOG_DIR "list_graph.txt", "wb");
 
-    printf("\n " LOG_DIR "list_graph.txt" "\n");
+    //printf("\n " LOG_DIR "list_graph.txt" "\n");
 
     fprintf(graph, "digraph G{\n");
     fprintf(graph, "rankdir=HR;\n");
@@ -538,9 +538,12 @@ int _list_search(struct List* list, elem_t elem FOR_LOGS(, LOG_PARAMS))
     {
         #ifdef STRCMP_COMP
 
-            if (strcmp(elem, list->data[counter]) == 0)
-                return counter;
-
+        if (list->data[counter] != NULL)
+            {
+                if (strcmp(elem, list->data[counter]) == 0)
+                    return counter;
+            }
+            
         #else 
 
             if (elem == list->data[counter])
@@ -1458,8 +1461,8 @@ int _list_dump(struct List* list, FILE* output FOR_LOGS(, LOG_PARAMS)) {
 
 //===================================================================
 
-int _list_push_first(struct List* list, elem_t value, int free, 
-                                                    LOG_PARAMS) {
+int _list_push_first(struct List* list, elem_t value, int free 
+                                        FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -1577,9 +1580,13 @@ int _list_get_free(struct  List* list FOR_LOGS(, LOG_PARAMS)) {
     unsigned free = list->free;
     list->free = (unsigned)list->next[free];
 
-    int ret = list_save_hash(list);
-    if (ret == -1)
-        return -1;
+    #ifdef LIST_HASH
+
+        int ret = list_save_hash(list);
+        if (ret == -1)
+            return -1;
+
+    #endif 
 
     if (free > list->capacity - 1) {
 
@@ -1598,8 +1605,8 @@ int _list_get_free(struct  List* list FOR_LOGS(, LOG_PARAMS)) {
 
 //===================================================================
 
-static int _list_push_check(struct List* list, unsigned int index,  
-                                                       LOG_PARAMS) {
+static int _list_push_check(struct List* list, unsigned int index  
+                                           FOR_LOGS(,LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -1637,8 +1644,8 @@ static int _list_push_check(struct List* list, unsigned int index,
 
 //===================================================================
 
-int _list_push_before_index(struct List* list, unsigned int index,
-                                         elem_t value FOR_LOGS(, LOG_PARAMS)) {
+int _list_push_before_index(struct List* list, unsigned int index, elem_t value 
+                                                         FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -1710,8 +1717,8 @@ int _list_push_before_index(struct List* list, unsigned int index,
 
 //===================================================================
 
-int _list_push_after_index(struct List* list, unsigned int index, 
-                                        elem_t value FOR_LOGS(, LOG_PARAMS)) {
+int _list_push_after_index(struct List* list, unsigned int index, elem_t value 
+                                                        FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -1776,8 +1783,8 @@ int _list_push_after_index(struct List* list, unsigned int index,
 
 //===================================================================
 
-static int _list_pop_check(struct List* list, unsigned int index,
-                                                      LOG_PARAMS) {
+static int _list_pop_check(struct List* list, unsigned int index
+                                           FOR_LOGS(,LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -1811,8 +1818,8 @@ static int _list_pop_check(struct List* list, unsigned int index,
 
 //===================================================================
 
-elem_t _list_pop_by_index(struct List* list, unsigned int index, 
-                                           int* err FOR_LOGS(, LOG_PARAMS)) {
+elem_t _list_pop_by_index(struct List* list, unsigned int index, int* err 
+                                                  FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     

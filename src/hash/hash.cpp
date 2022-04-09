@@ -251,7 +251,7 @@ static int _hash_table_dump(Hash_table* hash_table, FILE* output FOR_LOGS(, LOG_
                                         "class = \"table\">\n");
 
     fprintf(output, "<caption style=\"border-collapse: collapse;   "
-                                     "background-color: lightgrey; "
+                                     "background-color: blue; "
                                      "border: 2px solid black;\">  "
                                      "<b>Hash table structure.</b> "
                                                        "</caption>");
@@ -293,7 +293,7 @@ static int _hash_table_dump_lists(Hash_table* hash_table, FILE* output FOR_LOGS(
                            "border = \"5\" "
                            "style = \" "
                            "padding: 15px; "
-                           "background-color: lightgrey;>\"\n");
+                           "background-color: blue;>\"\n");
 
     fprintf(output, "<tr><td><b>Index</b></td>");
 
@@ -468,12 +468,6 @@ int _hash_table_search(Hash_table* hash_table, elem_t elem, List** list FOR_LOGS
     HASH_TABLE_PTR_CHECK(hash_table);
     HASH_TABLE_VALID(hash_table);
 
-    if (hash_table->size == 0)
-    {
-        list = NULL;
-        return 0;
-    }
-
     uint32_t hash_value = (hash_table->hash_func) ((void*) &elem, sizeof(elem));
     *list = hash_table->data[hash_value % hash_table->capacity];
 
@@ -524,13 +518,39 @@ int _hash_table_insert(Hash_table* hash_table, elem_t elem, List* list FOR_LOGS(
     #ifdef HASH_TABLE_RESIZE
 
         if (hash_table_increase(hash_table) == -1)
-            return -1;
+            return -1;  
 
-    #endif  
+    #else 
+
+        if (hash_table->size == hash_table->capacity)
+        {
+            error_report(HASH_T_MAX_SIZE_REACHED);
+            return -1;
+        }
+
+    #endif
 
     hash_table->size += 1;
 
     return list_push_back(list, elem);
+}
+
+//-----------------------------------------------
+
+int _hash_table_smart_insert(Hash_table* hash_table, elem_t elem, List** list FOR_LOGS(, LOG_PARAMS))
+{
+    hash_log_report();
+    HASH_TABLE_PTR_CHECK(hash_table);
+    HASH_TABLE_VALID(hash_table);
+
+    int index = hash_table_search(hash_table, elem, list);
+    if (index == -1)
+        return -1;
+
+    if (index != ELEMENT_NOT_FOUND)
+        return index;
+
+    return hash_table_insert(hash_table, elem, *list); 
 }
 
 //-----------------------------------------------
@@ -565,19 +585,40 @@ int _hash_table_testing(Hash_table* hash_table, uint32_t (*hash_func) (void*, un
     List* list = NULL;
     int index = 0;
 
-    index = hash_table_search(hash_table, "privet", &list);
+    // index = hash_table_search(hash_table, "privet", &list);
+    // if (index == -1)
+    //     return -1;
+
+    // index = hash_table_insert(hash_table, "privet", list);
+    // if (index == -1)
+    //     return -1;
+
+    // index = hash_table_search(hash_table, "privet", &list);
+    // if (index == -1)
+    //     return -1;
+
+    // index = hash_table_insert(hash_table, "privet", list);
+    // if (index == -1)
+    //     return -1;
+
+    // index = hash_table_search(hash_table, "privet", &list);
+    // if (index == -1)
+    //     return -1;
+
+    index = hash_table_smart_insert(hash_table, "privet", &list);
     if (index == -1)
         return -1;
 
-    printf("\n index value : %d \n", index);
-
-    index = hash_table_insert(hash_table, "privet", list);
+    index = hash_table_smart_insert(hash_table, "privet", &list);
     if (index == -1)
         return -1;
 
-    printf("\n index value : %d \n", index);
+    index = hash_table_smart_insert(hash_table, "privet", &list);
+    if (index == -1)
+        return -1;
 
-    if (hash_table_delete(hash_table, index, list) == -1)
+    int ret_val = hash_table_delete(hash_table, index, list);
+    if (ret_val == -1)
         return -1;
 
     if (hash_table_dtor(hash_table) == -1)

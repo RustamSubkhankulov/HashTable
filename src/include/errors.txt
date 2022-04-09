@@ -729,3 +729,6 @@ Hash_table: zero initial capacity of table)
 
 DEF_ERR(1009, HASH_T_NULL_LIST_PTR,
 Null ptr to list structure in hash_table)
+
+DEF_ERR(1010, HASH_T_MAX_SIZE_REACHED,
+Maximum size of hash table is reached)
