@@ -134,11 +134,32 @@ static int _hash_table_validator(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
         errors_ct += 1;
     }
 
-    if (hash_table->capacity != 0 && hash_table->data == NULL)
+    if (hash_table->data == NULL)
     {
         error_report(HASH_TABLE_INV_DATA_PTR);
         errors_ct += 1;
     }
+
+    else
+    {
+        for (unsigned int counter = 0;
+                          counter < hash_table->capacity;
+                          counter ++)
+        {
+            if (!hash_table->data[counter])
+            {
+                error_report(HASH_T_NULL_LIST_PTR);
+                errors_ct += 1;
+            }
+
+            else 
+            {
+                int is_ok = list_validator(hash_table->data[counter])
+                if (is_ok == -1)
+                    return -1;                                //вынос кода
+            }
+        }
+    } 
 
     #ifdef HASH_TABLE_DUMP
 
@@ -249,6 +270,12 @@ int _hash_table_ctor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
     }
 
     hash_table->size = 0;
+
+    if (Hash_table_init_capacity == 0)
+    {
+        error_report(HASH_T_ZERO_INIT_CAP);
+        return -1;
+    }
     
     int ret_val = hash_table_reallocate(hash_table, Hash_tabel_init_cap) 
     if (ret_val == -1)
@@ -382,7 +409,8 @@ int _hash_table_delete(Hash_table* hash_table, unsigned int index, List* list FO
 
 //-----------------------------------------------
 
-int _hash_table_testing(Hash_table* hash_table, uint32_t (*hash_func) (void*, unsigned int) FOR_LOGS(, LOG_PARAMS))
+int _hash_table_testing(Hash_table* hash_table, uint32_t (*hash_func) (void*, unsigned int), 
+                        const char* hash_func_name, FILE* stat_file FOR_LOGS(, LOG_PARAMS))
 {
     hash_log_report();
     HASH_TABLE_PTR_CHECK(hash_table);
@@ -403,4 +431,15 @@ int _hash_table_flush_stats(Hash_table* hash_table, FILE* stat_file FOR_LOGS(, L
     hash_log_report();
     HASH_TABLE_PTR_CHECK(hash_table);
     HASH_TABLE_VALID(hash_table);
+    FILE_PTR_CHECK(stat_file);
+
+    for (unsigned int counter = 0;
+                      counter < hash_table->capacity;
+                      counter ++)
+    {
+        fprintf(stat_file, "%d; %d; ", counter, (hash_table->data[counter])->size);
+    }
+
+    fprintf(stat_file, "\n");
+
 }

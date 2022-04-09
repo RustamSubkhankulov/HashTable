@@ -94,7 +94,7 @@ int _hash_table_insert(Hash_table* hash_table, elem_t elem, List* list FOR_LOGS(
 
 int _hash_table_delete(Hash_table* hash_table, unsigned int index, List* list FOR_LOGS(, LOG_PARAMS));
 
-int _hash_table_testing(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS));
+int _hash_table_testing(Hash_table* hash_table, uint32_t (*hash_func) (void*, unsigned int), const char* hash_func_name, FILE* stat_file FOR_LOGS(, LOG_PARAMS));
 
 int _hash_table_flush_stats(Hash_table* hash_table, FILE* stat_file FOR_LOGS(, LOG_PARAMS));
 
@@ -118,8 +118,8 @@ int _hash_table_flush_stats(Hash_table* hash_table, FILE* stat_file FOR_LOGS(, L
 #define hash_table_delete(hash_table, index, list) \
        _hash_table_delete(hash_table, index, list FOR_LOGS(, LOG_ARGS))
 
-#define hash_table_testing(hash_table) \
-       _hash_table_testing(hash_table FOR_LOGS(, LOG_ARGS))
+#define hash_table_testing(hash_table, hash_func, name, file) \
+       _hash_table_testing(hash_table, hash_func, mame, file FOR_LOGS(, LOG_ARGS))
 
 #define hash_table_flush_stats(hash_table, file) \
        _hash_table_flush_stats(hash_table, file FOR_LOGS(, LOG_ARGS))
