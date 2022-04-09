@@ -702,3 +702,12 @@ Invalid size of the patch picture)
 
 DEF_ERR(855, INV_PATCH_PICT_POS,
 Invalid position of patch picture)
+
+DEF_ERR(1001, INV_HASH_TABLE_PTR,
+Invalid pointer to Hash_table structure)
+
+DEF_ERR(1002, HASH_TABLE_UNPREP,
+Hash_table structure is unprepared for constructing)
+
+DEF_ERR(1003, HASH_TABLE_INV_CONF_SIZE,
+Invalid configure values for max and init sizes of hash table, init > max)

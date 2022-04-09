@@ -24,31 +24,31 @@ static int Graph_counter = 0;
 
 #ifdef LIST_HASH
 
-    static int _list_save_hash(struct List* list, LOG_PARAMS);
+    static int _list_save_hash(struct List* list FOR_LOGS(, LOG_PARAMS));
 
-    static int _list_hash_check(struct List* list, LOG_PARAMS);
+    static int _list_hash_check(struct List* list FOR_LOGS(, LOG_PARAMS));
 
 #endif
 
 //===================================================================
 
-static int _list_set_zero(struct List* list, LOG_PARAMS);
+static int _list_set_zero(struct List* list FOR_LOGS(, LOG_PARAMS));
 
-static int _list_poisoning(struct List* list, LOG_PARAMS);
+static int _list_poisoning(struct List* list FOR_LOGS(, LOG_PARAMS));
 
-static int _list_clear_check(struct List* list, LOG_PARAMS);
+static int _list_clear_check(struct List* list FOR_LOGS(, LOG_PARAMS));
 
-static int _list_free_memory(struct List* list, LOG_PARAMS);
+static int _list_free_memory(struct List* list FOR_LOGS(, LOG_PARAMS));
 
-static int _list_poison_check(struct List* list, LOG_PARAMS);
+static int _list_poison_check(struct List* list FOR_LOGS(, LOG_PARAMS));
 
-static int _list_allocate_memory(struct List* list, LOG_PARAMS);
+static int _list_allocate_memory(struct List* list FOR_LOGS(, LOG_PARAMS));
 
-static int _list_check_connections(struct List* list, LOG_PARAMS);
+static int _list_check_connections(struct List* list FOR_LOGS(, LOG_PARAMS));
 
-static int _list_set_next_in_order(struct List* list, LOG_PARAMS);
+static int _list_set_next_in_order(struct List* list FOR_LOGS(, LOG_PARAMS));
 
-static int _list_out(struct List* list, FILE* output, LOG_PARAMS);
+static int _list_out(struct List* list, FILE* output FOR_LOGS(, LOG_PARAMS));
 
 static int _list_pop_check(struct List* list, unsigned int index,
                                                       LOG_PARAMS);
@@ -56,20 +56,20 @@ static int _list_pop_check(struct List* list, unsigned int index,
 static int _list_push_check(struct List* list, unsigned int index,  
                                                        LOG_PARAMS);
 
-static int _list_check_free_elements(struct List* list, LOG_PARAMS);
+static int _list_check_free_elements(struct List* list FOR_LOGS(, LOG_PARAMS));
 
-static int _list_pointers_values_check(struct List* list, LOG_PARAMS);
+static int _list_pointers_values_check(struct List* list FOR_LOGS(, LOG_PARAMS));
 
-static int _list_set_prev_to_minus_one(struct List* list, LOG_PARAMS);
+static int _list_set_prev_to_minus_one(struct List* list FOR_LOGS(, LOG_PARAMS));
 
-static int _update_list_pointers_values(struct List* list, LOG_PARAMS);
+static int _update_list_pointers_values(struct List* list FOR_LOGS(, LOG_PARAMS));
 
 static int _list_prepare_after_increase(struct List* list, size_t prev_capacity, 
                                                                     LOG_PARAMS);
 
 //===================================================================
 
-int _list_draw_graph(struct List* list, LOG_PARAMS) {
+int _list_draw_graph(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -159,7 +159,7 @@ int _list_draw_graph(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-int _list_draw_graph_logical(struct List* list, LOG_PARAMS) {
+int _list_draw_graph_logical(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -235,7 +235,7 @@ int _list_draw_graph_logical(struct List* list, LOG_PARAMS) {
 
 #ifdef LIST_HASH
 
-static int _list_save_hash(struct List* list, LOG_PARAMS) {
+static int _list_save_hash(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -279,7 +279,7 @@ static int _list_save_hash(struct List* list, LOG_PARAMS) {
 
 #ifdef LIST_HASH
 
-static int _list_hash_check(struct List* list, LOG_PARAMS) {
+static int _list_hash_check(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -373,7 +373,7 @@ static int _list_recalloc_buffers(struct List* list, size_t prev_capacity,
 
 //===================================================================
 
-static int _list_decrease(struct List* list, LOG_PARAMS) {
+static int _list_decrease(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -410,7 +410,7 @@ static int _list_decrease(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-static int _list_increase(struct List* list, LOG_PARAMS) {
+static int _list_increase(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -481,7 +481,7 @@ static int _list_increase(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-static int _list_prepare_after_increase(struct List* list, size_t prev_capacity, LOG_PARAMS) {
+static int _list_prepare_after_increase(struct List* list, size_t prev_capacity FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -546,7 +546,7 @@ int _list_get_by_logical_number(struct List* list, int number, int* err,
 
 //===================================================================
 
-int _list_linearize(struct List* list, LOG_PARAMS) {
+int _list_linearize(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -622,7 +622,7 @@ int _list_linearize(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-static int _list_clear_check(struct List* list, LOG_PARAMS) {
+static int _list_clear_check(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -636,7 +636,7 @@ static int _list_clear_check(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-static int _list_poison_check(struct List* list, LOG_PARAMS) {
+static int _list_poison_check(struct List* list FOR_LOGS(, LOG_PARAMS)) {
     
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -644,7 +644,7 @@ static int _list_poison_check(struct List* list, LOG_PARAMS) {
     for (long unsigned counter = 0; 
                        counter < sizeof(List); counter++) {
 
-        if (*((unsigned char*)list + counter) != POISON_VALUE)
+        if (*((unsigned char*)list + counter) != LIST_POISON_VALUE)
             
             return 0;
     }
@@ -654,7 +654,7 @@ static int _list_poison_check(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-static int _list_poisoning(struct List* list, LOG_PARAMS) {
+static int _list_poisoning(struct List* list FOR_LOGS(, LOG_PARAMS)) {
     
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -662,7 +662,7 @@ static int _list_poisoning(struct List* list, LOG_PARAMS) {
     for (long unsigned counter = 0; 
                        counter < sizeof(List); counter++) {
 
-        *((char*)list + counter) = (char)POISON_VALUE;
+        *((char*)list + counter) = (char)LIST_POISON_VALUE;
     }
 
     return 0;
@@ -670,7 +670,7 @@ static int _list_poisoning(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-static int _list_set_zero(struct List* list, LOG_PARAMS) {
+static int _list_set_zero(struct List* list FOR_LOGS(, LOG_PARAMS)) {
     
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -687,7 +687,7 @@ static int _list_set_zero(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-static int _update_list_pointers_values(struct List* list, LOG_PARAMS) {
+static int _update_list_pointers_values(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -706,7 +706,7 @@ static int _update_list_pointers_values(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-static int _list_check_free_elements(struct List* list, LOG_PARAMS) {
+static int _list_check_free_elements(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -746,7 +746,7 @@ static int _list_check_free_elements(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-static int _list_check_connections(struct List* list, LOG_PARAMS) {
+static int _list_check_connections(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -808,7 +808,7 @@ static int _list_check_connections(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-static int _list_pointers_values_check(struct List* list, LOG_PARAMS) {
+static int _list_pointers_values_check(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -860,7 +860,7 @@ static int _list_pointers_values_check(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-static int _list_allocate_memory(struct List* list, LOG_PARAMS) {
+static int _list_allocate_memory(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -897,7 +897,7 @@ static int _list_allocate_memory(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-static int _list_free_memory(struct List* list, LOG_PARAMS) {
+static int _list_free_memory(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -915,7 +915,7 @@ static int _list_free_memory(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-int _list_dtor(struct List* list, LOG_PARAMS) {
+int _list_dtor(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -940,7 +940,7 @@ int _list_dtor(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-static int _list_set_prev_to_minus_one(struct List* list, LOG_PARAMS) {
+static int _list_set_prev_to_minus_one(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -964,7 +964,7 @@ static int _list_set_prev_to_minus_one(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-static int _list_set_next_in_order(struct List* list, LOG_PARAMS) {
+static int _list_set_next_in_order(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -989,7 +989,7 @@ static int _list_set_next_in_order(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-int _list_ctor(struct List* list, LOG_PARAMS) {
+int _list_ctor(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -1060,7 +1060,7 @@ int _list_ctor(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-int _list_validator(struct List* list, LOG_PARAMS) {
+int _list_validator(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -1201,7 +1201,7 @@ int _list_validator(struct List* list, LOG_PARAMS) {
 
 //===================================================================
 
-static int _list_out(struct List* list, FILE* output, LOG_PARAMS) {
+static int _list_out(struct List* list, FILE* output FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -1280,7 +1280,7 @@ static int _list_out(struct List* list, FILE* output, LOG_PARAMS) {
 
 //===================================================================
 
-int _list_dump(struct List* list, FILE* output, LOG_PARAMS) {
+int _list_dump(struct List* list, FILE* output FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -1421,7 +1421,7 @@ int _list_push_first(struct List* list, elem_t value, int free,
 
 //===================================================================
 
-elem_t _list_pop_last(struct List* list, int* err, LOG_PARAMS) {
+elem_t _list_pop_last(struct List* list, int* err FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -1481,7 +1481,7 @@ elem_t _list_pop_last(struct List* list, int* err, LOG_PARAMS) {
 
 //===================================================================
 
-int _list_get_free(struct  List* list, LOG_PARAMS) {
+int _list_get_free(struct  List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -1556,7 +1556,7 @@ static int _list_push_check(struct List* list, unsigned int index,
 //===================================================================
 
 int _list_push_before_index(struct List* list, unsigned int index,
-                                         elem_t value, LOG_PARAMS) {
+                                         elem_t value FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -1629,7 +1629,7 @@ int _list_push_before_index(struct List* list, unsigned int index,
 //===================================================================
 
 int _list_push_after_index(struct List* list, unsigned int index, 
-                                        elem_t value, LOG_PARAMS) {
+                                        elem_t value FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -1730,7 +1730,7 @@ static int _list_pop_check(struct List* list, unsigned int index,
 //===================================================================
 
 elem_t _list_pop_by_index(struct List* list, unsigned int index, 
-                                           int* err, LOG_PARAMS) {
+                                           int* err FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -1812,7 +1812,7 @@ elem_t _list_pop_by_index(struct List* list, unsigned int index,
 
 //===================================================================
 
-int _list_push_back(struct List* list, elem_t value, LOG_PARAMS) {
+int _list_push_back(struct List* list, elem_t value FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -1826,7 +1826,7 @@ int _list_push_back(struct List* list, elem_t value, LOG_PARAMS) {
 
 //===================================================================
 
-elem_t _list_pop_back(struct List* list, int* err, LOG_PARAMS) {
+elem_t _list_pop_back(struct List* list, int* err FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -1840,7 +1840,7 @@ elem_t _list_pop_back(struct List* list, int* err, LOG_PARAMS) {
 
 //===================================================================
 
-int _list_pop_front(struct List* list, int* err, LOG_PARAMS) {
+int _list_pop_front(struct List* list, int* err FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -1854,7 +1854,7 @@ int _list_pop_front(struct List* list, int* err, LOG_PARAMS) {
 
 //===================================================================
 
-int _list_push_front(struct List* list, elem_t value, LOG_PARAMS) {
+int _list_push_front(struct List* list, elem_t value FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);

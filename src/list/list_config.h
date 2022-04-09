@@ -21,19 +21,19 @@
 //LIST PARAMETERS
 
 //Element type of the list structure
-typedef int elem_t;
+typedef char* elem_t;
 
 //Name of type using in list(for logs)
-#define TYPE_NAME "int"
+#define TYPE_NAME "char*"
 
 //Specificator for type using in list
-#define ELEM_SPEC "%d"
+#define ELEM_SPEC "%s"
 
 //Starting list capacity
-const size_t List_start_capacity = 4;
+const size_t List_start_capacity = 24;
 
 //Max list capacity
-const size_t List_max_capacity = 16;
+const size_t List_max_capacity = 48;
 
 //===================================================================
 
@@ -52,11 +52,6 @@ const size_t List_max_capacity = 16;
 
 //SUPPORTING DEFINITIONS
 
-#define POISON_VALUE 228
+#define LIST_POISON_VALUE 228
 
 //==================================================================
-
-//GENERAL
-
-//Turns on logs in general use functions
-#define GENERAL_LOGS
