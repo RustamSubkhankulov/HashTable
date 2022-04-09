@@ -25,7 +25,10 @@ obj/list.o: src/global_conf.h src/list/list.cpp src/list/list.h src/list/list_co
 obj/list_tests.o: src/global_conf.h src/list/list_tests.cpp src/list/list_tests.h src/list/list_config.h 
 	$(CC) src/list/list_tests.cpp -c -o obj/list_tests.o
 
-.PNONY: cleanup
+.PNONY: cleanup imagesdir
 
 cleanup:
 	rm obj/*.o 
+
+imagesdir:
+	mkdir /tmp/list_images

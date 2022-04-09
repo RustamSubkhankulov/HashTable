@@ -5,7 +5,7 @@
 
 static int _hash_table_validator(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS));
 
-static int _hash_table_dump(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS));
+static int _hash_table_dump(Hash_table* hash_table, FILE* output FOR_LOGS(, LOG_PARAMS));
 
 static int _hash_table_byte_check(Hash_table* hash_table, unsigned char check_value FOR_LOGS(, LOG_PARAMS));
 
@@ -15,7 +15,12 @@ static int _hash_table_reallocate(Hash_table* hash_table, unsigned int New_cap F
 
 static int _hash_table_increase(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 
+static int _hash_table_dump_lists(Hash_table* hash_table, FILE* output FOR_LOGS(, LOG_PARAMS))
+
 //===============================================
+
+#define hash_table_dump_lists(hash_table, output) \
+       _hash_table_dump_lists(hash_table, output FOR_LOGS(, LOG_ARGS))
 
 #define hash_table_increase(hash_table) \
        _hash_table_increase(hash_table FOR_LOGS(, LOG_ARGS))
@@ -23,8 +28,8 @@ static int _hash_table_increase(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 #define hash_table_validator(hash_table) \
        _hash_table_validator(hash_table FOR_LOGS(, LOG_ARGS))
 
-#define hash_table_dump(hash_table) \
-       _hash_table_dump(hash_table FOR_LOGS(, LOG_ARGS))
+#define hash_table_dump(hash_table, output) \
+       _hash_table_dump(hash_table, output FOR_LOGS(, LOG_ARGS))
 
 #define hash_table_byte_check(hash_table) \
        _hash_table_byte_check(hash_table FOR_LOGS(, LOG_ARGS))
@@ -80,7 +85,57 @@ uint32_t ror_hash        (void* data, unsigned int size)
 
 uint32_t my_hash         (void* data, unsigned int size)
 {
-    return 0;
+    char* base = (char*)data;
+
+    assert(base);
+
+    const unsigned int m = 0x5bd1e995;
+    const unsigned int seed = 0;
+    const int r = 24;
+
+    unsigned int h = seed ^ (unsigned int)size;
+
+    const unsigned char* ddata = (const unsigned char*)base;
+    unsigned int k = 0;
+
+    while (len >= 4) {
+
+        k = ddata[0];
+        k |= (unsigned)(ddata[1] << 8);
+        k |= (unsigned)(ddata[2] << 16);
+        k |= (unsigned)(ddata[3] << 24);
+
+        k *= m;
+        k ^= k >> r;
+        k *= m;
+
+        h *= m;
+        h ^= k;
+
+        ddata += 4;
+        size -= 4;
+
+    }
+
+    switch (size) {
+        case 3:
+            h ^= (unsigned)(ddata[2] << 16);
+            [[fallthrough]];
+        case 2:
+            h ^= (unsigned)(ddata[1] << 8);
+            [[fallthrough]];
+        case 1:
+            h ^= ddata[0];
+            h *= m;
+            [[fallthrough]];
+        default:;
+    }
+
+    h ^= h >> 13;
+    h *= m;
+    h ^= h >> 15;
+
+    return h;
 }
 
 //===============================================
@@ -165,7 +220,7 @@ static int _hash_table_validator(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 
         if (hash_table->data != NULL)
         {
-            int ret_val = hash_table_dump(hash_table);
+            int ret_val = hash_table_dump(hash_table, logs_file);
             if (ret_val == -1)
                 return -1;
         }
@@ -180,17 +235,93 @@ static int _hash_table_validator(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 
 //-----------------------------------------------
 
-static int _hash_table_dump(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
+static int _hash_table_dump(Hash_table* hash_table, FILE* output FOR_LOGS(, LOG_PARAMS))
 {
     hash_log_report();
     HASH_TABLE_PTR_CHECK(hash_table);
+    FILE_PTR_CHECK(output);
+
+    fprintf(output, "\n <table style = \"border-collapse: collapse;"
+                                        "border: 3px solid black\" "
+                                        "class = \"table\">\n");
+
+    fprintf(output, "<caption style=\"border-collapse: collapse;   "
+                                     "background-color: lightgrey; "
+                                     "border: 2px solid black;\">  "
+                                     "<b>Hash table structure.</b> "
+                                                       "</caption>");
+
+    fprintf(output, "<tr><td>Address</td><td> <%p></td></tr>\n", list);
 
 
+    fprintf(output, "<tr><td> Capacity </td><td>%u</td></tr>\n", 
+                                          hash_table->capacity);
+
+    fprintf(output, "<tr><td> Size </td><td>%u</td></tr>\n", 
+                                          hash_table->size);
+
+    fprintf(output, "<tr><td>Data array address</td><td><%p></td></tr>\n", 
+                                                        hash_table->data);
+
+    fprintf(output, "<tr><td> Hash func address </td><td><%p></td></tr>\n", 
+                                                    hash_table->hash_func);
+    fprintf(output, "\n</table>\n");
+
+    return hash_table_dump_lists(hash_table, output);
 }
 
 //-----------------------------------------------
 
-int _hash_table_set_hash_func(Hash_tabel* hash_table, uint32_t (*hash_func) (void*, unsigned int) FOR_LOGS(, LOG_PARAMS))
+static int _hash_table_dump_lists(Hash_table* hash_table, FILE* output FOR_LOGS(, LOG_PARAMS))
+{
+    hash_log_report();
+    HASH_TABLE_PTR_CHECK(hash_table);
+
+    fprintf(output, "<style> td\n { padding: 7px;"
+                                  " border: 1px solid black;"
+                                  " border-collapse: collapse;}\n</style>");
+
+    fprintf(output, "<table width = \" 100%% \" "
+                           "cellspacing=\"0\" "
+                           "cellpadding=\"4\" "
+                           "border = \"5\" "
+                           "style = \" "
+                           "padding: 15px; "
+                           "background-color: lightgrey;>\"\n");
+
+    fprintf(output, "<tr><td><b>Index</b></td>");
+
+    for (unsigned counter = 0; counter < hash_table->capacity; counter++) 
+        fprintf(output, "<td><b> %u </b></td>", counter);
+    
+    fprintf(output, "</tr>");
+
+    fprintf(output, "<tr><td><b>Data</b></td>");
+
+    for (unsigned counter = 0; counter < list->capacity; counter++) 
+        fprintf(output, "<td> %p </td>", hash_table->data[counter]);
+
+    fprintf(output, "</tr>");
+
+    fprintf(output, "</table>");
+
+    for (unsigned int counter = 0;
+                      counter < hash_table->capacity;
+                      counter ++)
+    {
+        if (hash_table->data[counter] != NULL)
+        {
+            int ret_val = list_dump(hash_table->data[counter], output);
+            if (ret_val == -1)
+                return -1;
+        }
+    }
+
+    return 0;
+}
+//-----------------------------------------------
+
+int _hash_table_set_hash_func(Hash_table* hash_table, uint32_t (*hash_func) (void*, unsigned int) FOR_LOGS(, LOG_PARAMS))
 {
     hash_log_report();
     HASH_TABLE_PTR_CHECK(hash_table);
@@ -308,6 +439,16 @@ int _hash_table_dtor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
     HASH_TABLE_PTR_CHECK(hash_table);
     HASH_TABLE_VALID(hash_table);
 
+    for (unsigned int counter = 0;
+                      counter < hash_table->capacity;
+                      counter ++ )
+    {
+        if (list_dtor(hash_table->data[counter]) == -1)
+            return -1;
+
+        free(hash_table->data[counter]);
+    }
+
     free(hash_table->data);
 
     int ret_val = hash_tabel_byte_fill(hash_table, Hash_table_poison_value);
@@ -409,8 +550,7 @@ int _hash_table_delete(Hash_table* hash_table, unsigned int index, List* list FO
 
 //-----------------------------------------------
 
-int _hash_table_testing(Hash_table* hash_table, uint32_t (*hash_func) (void*, unsigned int), 
-                        const char* hash_func_name, FILE* stat_file FOR_LOGS(, LOG_PARAMS))
+int _hash_table_testing(Hash_table* hash_table, uint32_t (*hash_func) (void*, unsigned int) FOR_LOGS(, LOG_PARAMS))
 {
     hash_log_report();
     HASH_TABLE_PTR_CHECK(hash_table);
@@ -421,32 +561,46 @@ int _hash_table_testing(Hash_table* hash_table, uint32_t (*hash_func) (void*, un
     if (hash_table_set_hash_func(hash_tabel, hash_func) == -1)
         return -1;
 
-    List** list = NULL;
+    List* list = NULL;
     int index = 0;
 
-    index = hash_table_search(hash_table, "privet", list);
+    index = hash_table_search(hash_table, "privet", &list);
+    if (index == -1)
+        return -1;
+
     printf("\n index value : %d \n");
 
+    index = hash_table_insert(hash_table, "privet", list);
+    if (index == -1)
+        return -1;
 
+    printf("\n index value : %d \n");
 
+    if (hash_table_delete(hash_table, index, list) == -1)
+        return -1;
+
+    if (hash_table_dtor(hash_table) == -1)
+        return -1;
+
+    return 0;
 }
 
 //-----------------------------------------------
 
-int _hash_table_flush_stats(Hash_table* hash_table, FILE* stat_file FOR_LOGS(, LOG_PARAMS))
-{
-    hash_log_report();
-    HASH_TABLE_PTR_CHECK(hash_table);
-    HASH_TABLE_VALID(hash_table);
-    FILE_PTR_CHECK(stat_file);
+// int _hash_table_flush_stats(Hash_table* hash_table, FILE* stat_file FOR_LOGS(, LOG_PARAMS))
+// {
+//     hash_log_report();
+//     HASH_TABLE_PTR_CHECK(hash_table);
+//     HASH_TABLE_VALID(hash_table);
+//     FILE_PTR_CHECK(stat_file);
 
-    for (unsigned int counter = 0;
-                      counter < hash_table->capacity;
-                      counter ++)
-    {
-        fprintf(stat_file, "%d; %d; ", counter, (hash_table->data[counter])->size);
-    }
+//     for (unsigned int counter = 0;
+//                       counter < hash_table->capacity;
+//                       counter ++)
+//     {
+//         fprintf(stat_file, "%d; %d; ", counter, (hash_table->data[counter])->size);
+//     }
 
-    fprintf(stat_file, "\n");
+//     fprintf(stat_file, "\n");
 
-}
+// }
