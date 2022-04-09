@@ -1,5 +1,10 @@
+#include <stdlib.h>
+
+//===============================================
+
 #include "hash.h"
 #include "../general/general.h"
+#include "../list/list.h"
 
 //===============================================
 
@@ -13,11 +18,14 @@ static int _hash_table_byte_fill (Hash_table* hash_table, unsigned char fill_val
 
 static int _hash_table_reallocate(Hash_table* hash_table, unsigned int New_cap FOR_LOGS(, LOG_PARAMS));
 
-static int _hash_table_increase(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
+static int _hash_table_increase(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS));
 
-static int _hash_table_dump_lists(Hash_table* hash_table, FILE* output FOR_LOGS(, LOG_PARAMS))
+static int _hash_table_dump_lists(Hash_table* hash_table, FILE* output FOR_LOGS(, LOG_PARAMS));
 
 //===============================================
+
+#define hash_table_reallocate(hash_table, new_cap) \
+       _hash_table_reallocate(hash_table, new_cap FOR_LOGS(, LOG_ARGS))
 
 #define hash_table_dump_lists(hash_table, output) \
        _hash_table_dump_lists(hash_table, output FOR_LOGS(, LOG_ARGS))
@@ -31,11 +39,11 @@ static int _hash_table_dump_lists(Hash_table* hash_table, FILE* output FOR_LOGS(
 #define hash_table_dump(hash_table, output) \
        _hash_table_dump(hash_table, output FOR_LOGS(, LOG_ARGS))
 
-#define hash_table_byte_check(hash_table) \
-       _hash_table_byte_check(hash_table FOR_LOGS(, LOG_ARGS))
+#define hash_table_byte_check(hash_table, byte) \
+       _hash_table_byte_check(hash_table, byte FOR_LOGS(, LOG_ARGS))
 
-#define hash_table_byte_fill(hash_table) \
-       _hash_table_byte_fill(hash_table FOR_LOGS(, LOG_ARGS))
+#define hash_table_byte_fill(hash_table, byte) \
+       _hash_table_byte_fill(hash_table, byte FOR_LOGS(, LOG_ARGS))
 
 //===============================================
 
@@ -98,7 +106,7 @@ uint32_t my_hash         (void* data, unsigned int size)
     const unsigned char* ddata = (const unsigned char*)base;
     unsigned int k = 0;
 
-    while (len >= 4) {
+    while (size >= 4) {
 
         k = ddata[0];
         k |= (unsigned)(ddata[1] << 8);
@@ -144,7 +152,6 @@ static int _hash_table_reallocate(Hash_table* hash_table, unsigned int new_cap F
 {
     hash_log_report();
     HASH_TABLE_PTR_CHECK(hash_table);
-    HASH_TABLE_VALID(hash_table);
     
     if (new_cap < hash_table->capacity)
     {
@@ -163,7 +170,7 @@ static int _hash_table_reallocate(Hash_table* hash_table, unsigned int new_cap F
                                                 hash_table->capacity, sizeof(List*));
     }
 
-    if (hash->table == NULL)
+    if (hash_table->data == NULL)
     {
         error_report(CANNOT_ALLOCATE_MEM);
         return -1;
@@ -209,8 +216,7 @@ static int _hash_table_validator(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 
             else 
             {
-                int is_ok = list_validator(hash_table->data[counter])
-                if (is_ok == -1)
+                if (list_validator(hash_table->data[counter]) == -1)
                     return -1;                                //вынос кода
             }
         }
@@ -220,8 +226,7 @@ static int _hash_table_validator(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 
         if (hash_table->data != NULL)
         {
-            int ret_val = hash_table_dump(hash_table, logs_file);
-            if (ret_val == -1)
+            if (hash_table_dump(hash_table, logs_file) == -1)
                 return -1;
         }
 
@@ -251,7 +256,8 @@ static int _hash_table_dump(Hash_table* hash_table, FILE* output FOR_LOGS(, LOG_
                                      "<b>Hash table structure.</b> "
                                                        "</caption>");
 
-    fprintf(output, "<tr><td>Address</td><td> <%p></td></tr>\n", list);
+    fprintf(output, "<tr><td>Address</td><td> <%p></td></tr>\n", 
+                                                    hash_table);
 
 
     fprintf(output, "<tr><td> Capacity </td><td>%u</td></tr>\n", 
@@ -298,7 +304,7 @@ static int _hash_table_dump_lists(Hash_table* hash_table, FILE* output FOR_LOGS(
 
     fprintf(output, "<tr><td><b>Data</b></td>");
 
-    for (unsigned counter = 0; counter < list->capacity; counter++) 
+    for (unsigned counter = 0; counter < hash_table->capacity; counter++) 
         fprintf(output, "<td> %p </td>", hash_table->data[counter]);
 
     fprintf(output, "</tr>");
@@ -311,8 +317,7 @@ static int _hash_table_dump_lists(Hash_table* hash_table, FILE* output FOR_LOGS(
     {
         if (hash_table->data[counter] != NULL)
         {
-            int ret_val = list_dump(hash_table->data[counter], output);
-            if (ret_val == -1)
+            if (list_dump(hash_table->data[counter], output) == -1)
                 return -1;
         }
     }
@@ -348,7 +353,7 @@ static int _hash_table_byte_check(Hash_table* hash_table, unsigned char check_va
     for (unsigned int counter = 0;
                       counter < sizeof(Hash_table); counter++)
     {
-        if ((unsigned char*) hash_table + counter != check_value)
+        if ( *((unsigned char*) hash_table + counter) != check_value)
             return 0;
     }
                       
@@ -365,7 +370,7 @@ static int _hash_table_byte_fill (Hash_table* hash_table, unsigned char fill_val
     for (unsigned int counter = 0;
                       counter < sizeof(Hash_table); counter++)
     {
-        (unsigned char*) hash_table + counter = fill_value
+        *((unsigned char*) hash_table + counter) = fill_value;
     }
                       
     return 0;   
@@ -389,8 +394,7 @@ int _hash_table_ctor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 
     if (is_poisoned)
     {
-        int ret_val = hash_table_byte_fill(hash_table, 0x00);
-        if (ret_val == -1)
+        if (hash_table_byte_fill(hash_table, 0x00) == -1)
             return -1;
     }
 
@@ -402,14 +406,13 @@ int _hash_table_ctor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 
     hash_table->size = 0;
 
-    if (Hash_table_init_capacity == 0)
+    if (Hash_table_init_cap == 0)
     {
         error_report(HASH_T_ZERO_INIT_CAP);
         return -1;
     }
     
-    int ret_val = hash_table_reallocate(hash_table, Hash_tabel_init_cap) 
-    if (ret_val == -1)
+    if (hash_table_reallocate(hash_table, Hash_table_init_cap) == -1)
         return -1;
 
     for (unsigned int counter = 0; 
@@ -419,7 +422,7 @@ int _hash_table_ctor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
         hash_table->data[counter] = (List*) calloc(1, sizeof(List));
         if (!hash_table->data[counter])
         {
-            error_report(CANNOT_ALLOCATE_MEM;
+            error_report(CANNOT_ALLOCATE_MEM);
             return -1;
         }
 
@@ -451,10 +454,9 @@ int _hash_table_dtor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 
     free(hash_table->data);
 
-    int ret_val = hash_tabel_byte_fill(hash_table, Hash_table_poison_value);
-    if (ret_val == -1)
+    if (hash_table_byte_fill(hash_table, Hash_table_poison_value) == -1)
         return -1;
-    
+
     return 0;
 }
 
@@ -490,8 +492,7 @@ static int _hash_table_increase(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 
     if (fill_factor > Resize_fill_factor)
     {
-        int ret_val = hash_table_reallocate(hash_table, hash_tabel->capacity * 2);
-        if (ret_val == -1)
+        if (hash_table_reallocate(hash_table, hash_table->capacity * 2) == -1)
             return -1;
     }
 
@@ -506,7 +507,7 @@ static int _hash_table_increase(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
             return -1;
         }
 
-        if (list_ctor(hash_tabel->data[counter]) == -1)
+        if (list_ctor(hash_table->data[counter]) == -1)
             return -1;
     }
 
@@ -522,9 +523,9 @@ int _hash_table_insert(Hash_table* hash_table, elem_t elem, List* list FOR_LOGS(
 
     #ifdef HASH_TABLE_RESIZE
 
-        int ret_val = hash_table_increase(hash_table);
-        if (ret_val == -1)
+        if (hash_table_increase(hash_table) == -1)
             return -1;
+
     #endif  
 
     hash_table->size += 1;
@@ -555,10 +556,10 @@ int _hash_table_testing(Hash_table* hash_table, uint32_t (*hash_func) (void*, un
     hash_log_report();
     HASH_TABLE_PTR_CHECK(hash_table);
 
-    if (hash_table_ctor(hash_tabel) == -1)
+    if (hash_table_ctor(hash_table) == -1)
         return -1;
 
-    if (hash_table_set_hash_func(hash_tabel, hash_func) == -1)
+    if (hash_table_set_hash_func(hash_table, hash_func) == -1)
         return -1;
 
     List* list = NULL;
@@ -568,13 +569,13 @@ int _hash_table_testing(Hash_table* hash_table, uint32_t (*hash_func) (void*, un
     if (index == -1)
         return -1;
 
-    printf("\n index value : %d \n");
+    printf("\n index value : %d \n", index);
 
     index = hash_table_insert(hash_table, "privet", list);
     if (index == -1)
         return -1;
 
-    printf("\n index value : %d \n");
+    printf("\n index value : %d \n", index);
 
     if (hash_table_delete(hash_table, index, list) == -1)
         return -1;

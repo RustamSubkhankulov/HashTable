@@ -139,7 +139,7 @@ int _list_push_first_test(struct List* list, LOG_PARAMS) {
 
     int free = list_get_free(list);
 
-    elem_t value = 10;
+    elem_t value  = "lol";
     int value_pos = 0;
 
     value_pos = list_push_first(list, value, free);
@@ -193,7 +193,7 @@ int _list_push_back_test(struct List* list, LOG_PARAMS) {
 
     list_test_init(list);
 
-    elem_t value = 10;
+    elem_t value = "lol";
     int free = list_get_free(list);
     int pos_prev = list_push_first(list, value, free);
 
@@ -247,7 +247,7 @@ int _list_pop_back_test(struct List* list, LOG_PARAMS) {
 
     list_test_init(list);
 
-    elem_t value = 10;
+    elem_t value  = "lol";
     int prev_pos  = list_push_back(list, value);
     int value_pos = list_push_back(list, value);
 
@@ -305,7 +305,7 @@ int _list_push_front_test(struct List* list, LOG_PARAMS) {
 
     list_test_init(list);
 
-    elem_t value = 10;
+    elem_t value = "lol";
     int prev_pos  = list_push_back(list, value);
 
     size_t prev_size = list->size;
@@ -357,7 +357,7 @@ int _list_pop_front_test(struct List* list, LOG_PARAMS) {
 
     list_test_init(list);
 
-    elem_t value = 10;
+    elem_t value  = "lol";
     int prev_pos  = list_push_back (list, value);
     int value_pos = list_push_front(list, value);
 
@@ -410,7 +410,7 @@ int _list_push_after_index_test(struct List* list, LOG_PARAMS) {
 
     list_test_init(list);
 
-    elem_t value = 10;
+    elem_t value = "lol";
     int pos_1 = list_push_back(list, value);
     int pos_2 = list_push_back(list, value);
 
@@ -469,7 +469,7 @@ int _list_push_before_index_test(struct List* list, LOG_PARAMS) {
 
     list_test_init(list);
 
-    elem_t value = 10;
+    elem_t value = "lol";
     int pos_1 = list_push_back(list, value);
     int pos_2 = list_push_back(list, value);
 
@@ -528,7 +528,7 @@ int _list_pop_by_index_test(struct List* list, LOG_PARAMS) {
 
     list_test_init(list);
 
-    elem_t value = 10;
+    elem_t value = "lol";
     int pos_1     = list_push_back(list, value);
     int value_pos = list_push_back(list, value);
     int pos_2     = list_push_back(list, value);

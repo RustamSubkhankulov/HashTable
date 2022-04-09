@@ -710,7 +710,7 @@ DEF_ERR(1002, HASH_TABLE_UNPREP,
 Hash_table structure is unprepared for constructing)
 
 DEF_ERR(1003, HASH_TABLE_INV_CONF_SIZE,
-Invalid configure values for max and init sizes of hash table, init > max)
+Invalid configure values for max and init sizes of hash table - init more than max)
 
 DEF_ERR(1004, HASH_TABLE_CAP_DECR,
 Can not decrease capacity of hash table)
@@ -719,7 +719,7 @@ DEF_ERR(1005, HASH_TABLE_INV_CAP_LESS_SIZE,
 Hash_table: size is more than capacity)
 
 DEF_ERR(1006, HASH_TABLE_INV_DATA_PTR,
-Hash_table: data ptr is NULL, although capacity != 0)
+Hash_table: data ptr is NULL although capacity is not equal 0)
 
 DEF_ERR(1007, INV_HASH_FUNC_PTR,
 Null ptr to hash function)

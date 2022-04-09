@@ -1,4 +1,7 @@
 #include <stdlib.h>
+#include <string.h>
+
+//===================================================================
 
 #include "list.h"
 #include "list_tests.h"
@@ -9,11 +12,15 @@
 //Static variables used to ensure that pointers to allocated 
 //dynamic memory have not changed
 
-static void* List_data_ptr = NULL;
+#ifdef LIST_PTR_CNTRL
 
-static void* List_next_ptr = NULL;
+    static void* List_data_ptr = NULL;
 
-static void* List_prev_ptr = NULL;
+    static void* List_next_ptr = NULL;
+
+    static void* List_prev_ptr = NULL;
+
+#endif 
 
 //===================================================================
 
@@ -50,22 +57,26 @@ static int _list_set_next_in_order(struct List* list FOR_LOGS(, LOG_PARAMS));
 
 static int _list_out(struct List* list, FILE* output FOR_LOGS(, LOG_PARAMS));
 
-static int _list_pop_check(struct List* list, unsigned int index,
-                                                      LOG_PARAMS);
+static int _list_pop_check(struct List* list, unsigned int index
+                                         FOR_LOGS(, LOG_PARAMS));
                                                       
-static int _list_push_check(struct List* list, unsigned int index,  
-                                                       LOG_PARAMS);
+static int _list_push_check(struct List* list, unsigned int index  
+                                           FOR_LOGS(,LOG_PARAMS));
 
 static int _list_check_free_elements(struct List* list FOR_LOGS(, LOG_PARAMS));
 
-static int _list_pointers_values_check(struct List* list FOR_LOGS(, LOG_PARAMS));
-
 static int _list_set_prev_to_minus_one(struct List* list FOR_LOGS(, LOG_PARAMS));
 
-static int _update_list_pointers_values(struct List* list FOR_LOGS(, LOG_PARAMS));
+static int _list_prepare_after_increase(struct List* list, size_t prev_capacity 
+                                                        FOR_LOGS(, LOG_PARAMS));
 
-static int _list_prepare_after_increase(struct List* list, size_t prev_capacity, 
-                                                                    LOG_PARAMS);
+#ifdef LIST_PTR_CNTRL
+
+    static int _list_pointers_values_check(struct List* list FOR_LOGS(, LOG_PARAMS));
+
+    static int _update_list_pointers_values(struct List* list FOR_LOGS(, LOG_PARAMS));
+
+#endif 
 
 //===================================================================
 
@@ -118,11 +129,11 @@ int _list_draw_graph(struct List* list FOR_LOGS(, LOG_PARAMS)) {
             fprintf(graph, "<TR><TD COLSPAN=\"3\"> <b> FREE ELEMENT "
                                                  "</b></TD></TR>\n"); 
 
-        fprintf(graph, "<TR><TD PORT=\"prev\"> PREV = %d</TD>\n",
+        fprintf(graph, " <TR><TD PORT=\"prev\"> PREV = %d</TD>\n",
                                             list->prev[counter]);
 
-        fprintf(graph, "<TD PORT=\"data\"> DATA = %d </TD>\n", 
-                                         list->data[counter]);
+        fprintf(graph, " <TD PORT=\"data\"> DATA = " ELEM_SPEC " </TD>\n", 
+                                                    list->data[counter]);
 
         fprintf(graph, "<TD PORT=\"next\"> NEXT = %d</TD></TR></TABLE>>];\n", 
                                                         list->next[counter]);
@@ -194,13 +205,13 @@ int _list_draw_graph_logical(struct List* list FOR_LOGS(, LOG_PARAMS)) {
             fprintf(graph, "<TR><TD COLSPAN=\"3\">  <b> HEAD OF LIST"
                                                  "</b></TD></TR>\n");
 
-        fprintf(graph, "<TR><TD PORT=\"prev\"> PREV = %d</TD>\n",
+        fprintf(graph, " <TR><TD PORT=\"prev\"> PREV = %d</TD>\n",
                                               list->prev[index]);
 
-        fprintf(graph, "<TD PORT=\"data\"> DATA = %d </TD>\n", 
-                                           list->data[index]);
+        fprintf(graph, " <TD PORT=\"data\"> DATA = " ELEM_SPEC" </TD>\n", 
+                                                      list->data[index]);
 
-        fprintf(graph, "<TD PORT=\"next\"> NEXT = %d</TD></TR></TABLE>>];\n", 
+        fprintf(graph, " <TD PORT=\"next\"> NEXT = %d</TD></TR></TABLE>>];\n", 
                                                          list->next[index]);
 
         if (index != list->tail)
@@ -327,8 +338,8 @@ static int _list_hash_check(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
 //===================================================================
 
-static int _list_recalloc_buffers(struct List* list, size_t prev_capacity, 
-                                                               LOG_PARAMS) {
+static int _list_recalloc_buffers(struct List* list, size_t prev_capacity 
+                                                  FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -388,9 +399,13 @@ static int _list_decrease(struct List* list FOR_LOGS(, LOG_PARAMS)) {
     if (ret == -1)
         return -1;
 
-    ret = update_list_pointers_values(list);
-    if (ret == -1)
-        return -1;
+    #ifdef LIST_PTR_CNTRL
+
+        ret = update_list_pointers_values(list);
+        if (ret == -1)
+            return -1;
+
+    #endif 
 
     list->next[list->capacity - 1] = 0;
 
@@ -458,7 +473,11 @@ static int _list_increase(struct List* list FOR_LOGS(, LOG_PARAMS)) {
     else
         list->prev = (int*)new_prev_ptr;
 
-    update_list_pointers_values(list);
+    #ifdef LIST_PTR_CNTRL
+
+        update_list_pointers_values(list);
+
+    #endif 
 
     int ret = list_prepare_after_increase(list, prev_capacity);
     if (ret == -1)
@@ -505,7 +524,7 @@ static int _list_prepare_after_increase(struct List* list, size_t prev_capacity 
 
 //===================================================================
 
-int _list_search(struct List* list, elem_t* elem FOR_LOGS(, LOG_PARAMS))
+int _list_search(struct List* list, elem_t elem FOR_LOGS(, LOG_PARAMS))
 {
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -604,19 +623,24 @@ int _list_linearize(struct List* list FOR_LOGS(, LOG_PARAMS)) {
         index = (unsigned)list->next[index];
     }
 
-    if (list->data == List_data_ptr) {
-        
-        free(list->data);
-        list->data = new_data_ptr;
-    }
-    
-    else {
+    #ifdef LIST_PTR_CNTRL
 
-        error_report(LIST_DATA_PTR_CHANGED);
-        return -1;
-    }
+        if (list->data != List_data_ptr)
+        {
+            error_report(LIST_DATA_PTR_CHANGED);
+            return -1;
+        }
 
-    update_list_pointers_values(list);
+    #endif 
+
+    free(list->data);
+    list->data = new_data_ptr;
+
+    #ifdef LIST_PTR_CNTRL
+
+        update_list_pointers_values(list);
+
+    #endif 
 
     for (unsigned counter = 1 ; counter < list->capacity; counter++) {
 
@@ -692,7 +716,7 @@ static int _list_poisoning(struct List* list FOR_LOGS(, LOG_PARAMS)) {
     for (long unsigned counter = 0; 
                        counter < sizeof(List); counter++) {
 
-        *((char*)list + counter) = (char)POISON_VALUE;
+        *((char*)list + counter) = (char)LIST_POISON_VALUE;
     }
 
     return 0;
@@ -717,22 +741,26 @@ static int _list_set_zero(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
 //===================================================================
 
-static int _update_list_pointers_values(struct List* list FOR_LOGS(, LOG_PARAMS)) {
+#ifdef LIST_PTR_CNTRL
 
-    list_log_report();
-    LIST_POINTER_CHECK(list);
+    static int _update_list_pointers_values(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
-    extern void* List_data_ptr;
-    List_data_ptr = list->data;
+        list_log_report();
+        LIST_POINTER_CHECK(list);
 
-    extern void* List_next_ptr;
-    List_next_ptr = list->next;
+        extern void* List_data_ptr;
+        List_data_ptr = list->data;
 
-    extern void* List_prev_ptr;
-    List_prev_ptr = list->prev;
+        extern void* List_next_ptr;
+        List_next_ptr = list->next;
 
-    return 0;
-}
+        extern void* List_prev_ptr;
+        List_prev_ptr = list->prev;
+
+        return 0;
+    }
+
+#endif 
 
 //===================================================================
 
@@ -838,55 +866,59 @@ static int _list_check_connections(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
 //===================================================================
 
-static int _list_pointers_values_check(struct List* list FOR_LOGS(, LOG_PARAMS)) {
+#ifdef LIST_PTR_CNTRL
 
-    list_log_report();
-    LIST_POINTER_CHECK(list);
+    static int _list_pointers_values_check(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
-    extern void* List_data_ptr;
+        list_log_report();
+        LIST_POINTER_CHECK(list);
 
-    if (list->data != (elem_t*)List_data_ptr) {
+        extern void* List_data_ptr;
 
-        error_report(LIST_DATA_PTR_CHANGED);
-        return 0;
+        if (list->data != (elem_t*)List_data_ptr) {
+
+            error_report(LIST_DATA_PTR_CHANGED);
+            return 0;
+        }
+
+        if (list->data == NULL) {
+
+            error_report(LIST_DATA_IS_NULL);
+            return -1;
+        }
+
+        extern void* List_next_ptr;
+
+        if (list->next != (int*)List_next_ptr) {
+
+            error_report(LIST_NEXT_PTR_CHANGED);
+            return 0;
+        }
+
+        if (list->next == NULL) {
+
+            error_report(LIST_NEXT_IS_NULL);
+            return -1;
+        }
+
+        extern void* List_prev_ptr;
+
+        if (list->prev != (int*)List_prev_ptr) {
+
+            error_report(LIST_PREV_PTR_CHANGED);
+            return 0;
+        }
+
+        if (list->prev == NULL) {
+
+            error_report(LIST_PREV_IS_NULL);
+            return -1;
+        }
+
+        return 1;
     }
 
-    if (list->data == NULL) {
-
-        error_report(LIST_DATA_IS_NULL);
-        return -1;
-    }
-
-    extern void* List_next_ptr;
-
-    if (list->next != (int*)List_next_ptr) {
-
-        error_report(LIST_NEXT_PTR_CHANGED);
-        return 0;
-    }
-
-    if (list->next == NULL) {
-
-        error_report(LIST_NEXT_IS_NULL);
-        return -1;
-    }
-
-    extern void* List_prev_ptr;
-
-    if (list->prev != (int*)List_prev_ptr) {
-
-        error_report(LIST_PREV_PTR_CHANGED);
-        return 0;
-    }
-
-    if (list->prev == NULL) {
-
-        error_report(LIST_PREV_IS_NULL);
-        return -1;
-    }
-
-    return 1;
-}
+#endif 
 
 //===================================================================
 
@@ -917,9 +949,13 @@ static int _list_allocate_memory(struct List* list FOR_LOGS(, LOG_PARAMS)) {
     else 
         list->prev = prev_temp;
 
-    int ret = update_list_pointers_values(list);
-    if (ret == -1)
-        return -1;
+    #ifdef LIST_PTR_CNTRL
+
+        int ret = update_list_pointers_values(list);
+        if (ret == -1)
+            return -1;
+
+    #endif 
 
     return 0;
     
@@ -932,9 +968,13 @@ static int _list_free_memory(struct List* list FOR_LOGS(, LOG_PARAMS)) {
     list_log_report();
     LIST_POINTER_CHECK(list);
 
-    int is_ok = list_pointers_values_check(list);
-    if (is_ok == 0)
-        return -1;
+    #ifdef LIST_PTR_CNTRL
+
+        int is_ok = list_pointers_values_check(list);
+        if (is_ok == 0)
+            return -1;
+
+    #endif 
 
     free(list->data);
     free(list->prev);
@@ -954,9 +994,13 @@ int _list_dtor(struct List* list FOR_LOGS(, LOG_PARAMS)) {
     if(is_ok == 0)
         return -1;
 
-    int is_pointers_ok = list_pointers_values_check(list);
-    if (is_pointers_ok == 0)
-        return -1;
+    #ifdef LIST_PTR_CNTRL
+
+        int is_pointers_ok = list_pointers_values_check(list);
+        if (is_pointers_ok == 0)
+            return -1;
+
+    #endif 
 
     int ret = list_free_memory(list);
     if (ret == -1)
@@ -1096,10 +1140,14 @@ int _list_validator(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     int err_val = 0;
 
-    if (list_pointers_values_check(list) == 0) {
+    #ifdef LIST_PTR_CNTRL
 
-        err_val++;
-    }
+        if (list_pointers_values_check(list) == 0) {
+
+            err_val++;
+        }
+
+    #endif 
 
     #ifdef LIST_HASH
 
@@ -1302,7 +1350,7 @@ static int _list_out(struct List* list, FILE* output FOR_LOGS(, LOG_PARAMS)) {
     }
     fprintf(output, "</tr>");
 
-    fprintf(output, "</table>");
+        fprintf(output, "</table>");
 
     return 0;
 }
@@ -1453,14 +1501,19 @@ int _list_push_first(struct List* list, elem_t value, int free,
 elem_t _list_pop_last(struct List* list, int* err FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
-    LIST_POINTER_CHECK(list);
+    
+    if (!list)
+    {
+        error_report(INV_LIST_STRUCTURE_PTR);
+        return NULL;
+    }
 
     if (list->head != list->tail || list->size != 1) {
 
         error_report(POP_LAST_FALSE_CALL);
         
         *err = -1;
-        return -1;
+        return NULL;
     }
 
     unsigned int last = list->tail;
@@ -1476,7 +1529,7 @@ elem_t _list_pop_last(struct List* list, int* err FOR_LOGS(, LOG_PARAMS)) {
     if (ret != 1) {
 
         *err = -1;
-        return -1;
+        return NULL;
     }
 
     list->head = 0;
@@ -1488,13 +1541,13 @@ elem_t _list_pop_last(struct List* list, int* err FOR_LOGS(, LOG_PARAMS)) {
 
     ret = list_set_next_in_order(list);
     if (ret == -1)
-        return -1;
+        return NULL;
 
     #ifdef LIST_HASH
 
         ret = list_save_hash(list);
         if (ret == -1)
-            return -1;
+            return NULL;
 
     #endif
 
@@ -1502,7 +1555,7 @@ elem_t _list_pop_last(struct List* list, int* err FOR_LOGS(, LOG_PARAMS)) {
     if (is_ok == 0) {
 
         *err = -1;
-        return -1;
+        return NULL;
     }
 
     return value;
@@ -1762,13 +1815,18 @@ elem_t _list_pop_by_index(struct List* list, unsigned int index,
                                            int* err FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
-    LIST_POINTER_CHECK(list);
+    
+    if (!list)
+    {
+        error_report(INV_LIST_STRUCTURE_PTR);
+        return NULL;
+    }
 
     int is_ok = list_pop_check(list, index);
     if (is_ok == 0) {
 
         *err = -1;
-        return -1;
+        return NULL;
     }
 
     if (list->is_linearized == 1
@@ -1777,7 +1835,7 @@ elem_t _list_pop_by_index(struct List* list, unsigned int index,
 
         int ret = list_decrease(list);
         if (ret == -1)
-            return -1;
+            return NULL;
     }
 
     if (list->head == list->tail && list->size == 1) {
@@ -1785,7 +1843,7 @@ elem_t _list_pop_by_index(struct List* list, unsigned int index,
         elem_t value = list_pop_last(list, err);
         
         if (*err == -1)
-            return -1;
+            return NULL;
         else
             return value;
     }
@@ -1797,7 +1855,7 @@ elem_t _list_pop_by_index(struct List* list, unsigned int index,
 
     int ret = clear_memory(&list->data[index], 1, sizeof(elem_t));
     if (ret != 1)
-        return -1;
+        return NULL;
 
     if (list->prev[index] == 0)  {
         
@@ -1825,7 +1883,7 @@ elem_t _list_pop_by_index(struct List* list, unsigned int index,
 
         ret = list_save_hash(list);
         if (ret == -1)
-            return -1;
+            return NULL;
 
     #endif
 
@@ -1833,7 +1891,7 @@ elem_t _list_pop_by_index(struct List* list, unsigned int index,
     if (is_ok == 0) {
 
         *err = -1;
-        return -1;
+        return NULL;
     }
 
     return value;
@@ -1858,25 +1916,35 @@ int _list_push_back(struct List* list, elem_t value FOR_LOGS(, LOG_PARAMS)) {
 elem_t _list_pop_back(struct List* list, int* err FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
-    LIST_POINTER_CHECK(list);
+    
+    if(!list)
+    {
+        error_report(INV_LIST_STRUCTURE_PTR);
+        return NULL;
+    }
 
     elem_t value = list_pop_by_index(list, list->tail, err);
     if (*err == -1)
-        return -1;
+        return NULL;
 
     return value;
 }
 
 //===================================================================
 
-int _list_pop_front(struct List* list, int* err FOR_LOGS(, LOG_PARAMS)) {
+elem_t _list_pop_front(struct List* list, int* err FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
-    LIST_POINTER_CHECK(list);
+    
+    if (!list)
+    {
+        error_report(INV_LIST_STRUCTURE_PTR);
+        return NULL;
+    }
 
     elem_t value = list_pop_by_index(list, list->head, err);
     if (*err == -1)
-        return -1;
+        return NULL;
     
     return value;
 }

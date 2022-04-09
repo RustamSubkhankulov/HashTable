@@ -21,7 +21,7 @@
 
 #ifdef HASH_TABLE_VALID_CHECK
 
-    #define HASH_TABLE_VALID(hash_tabel_ptr)                    \
+    #define HASH_TABLE_VALID(hash_table_ptr)                    \
                                                                 \
             do                                                  \
             {                                                   \
@@ -46,7 +46,7 @@ struct Hash_table
     unsigned int capacity;
 
     uint32_t (*hash_func) (void*, unsigned int);
-}
+};
 
 //===============================================
 
@@ -80,7 +80,7 @@ uint32_t my_hash         (void* data, unsigned int size);
 
 //===============================================
 
-int _hash_table_set_hash_func(Hash_tabel* hash_table, uint32_t (*hash_func) (void*, unsigned int) FOR_LOGS(, LOG_PARAMS));
+int _hash_table_set_hash_func(Hash_table* hash_table, uint32_t (*hash_func) (void*, unsigned int) FOR_LOGS(, LOG_PARAMS));
 
 //===============================================
 
@@ -112,8 +112,8 @@ int _hash_table_testing(Hash_table* hash_table, uint32_t (*hash_func) (void*, un
 #define hash_table_search(hash_table, elem, list) \
        _hash_table_search(hash_table, elem, list FOR_LOGS(, LOG_ARGS))
 
-#define hash_table_insert(hash_table, elem) \
-       _hash_table_insert(hash_table, elem FOR_LOGS(, LOG_ARGS))
+#define hash_table_insert(hash_table, elem, list) \
+       _hash_table_insert(hash_table, elem, list FOR_LOGS(, LOG_ARGS))
 
 #define hash_table_delete(hash_table, index, list) \
        _hash_table_delete(hash_table, index, list FOR_LOGS(, LOG_ARGS))

@@ -21,10 +21,10 @@
 //LIST PARAMETERS
 
 //Element type of the list structure
-typedef char* elem_t;
+typedef const char* elem_t;
 
 //Name of type using in list(for logs)
-#define TYPE_NAME "char*"
+#define TYPE_NAME "const char*"
 
 //Specificator for type using in list
 #define ELEM_SPEC "%s"
@@ -50,6 +50,8 @@ const size_t List_max_capacity = 128;
 
 //GRAPHVIZ
 #define LIST_GRAPHVIZ
+
+//#define LIST_PTR_CNTRL
 
 //==================================================================
 

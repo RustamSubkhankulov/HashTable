@@ -101,7 +101,10 @@ enum List_search_results
 
 //==================================================================
 
-#define list_search(list, elem) \  
+#define update_list_pointers_values(list) \
+       _update_list_pointers_values(list FOR_LOGS(, LOG_ARGS)) 
+
+#define list_search(list, elem) \
        _list_search(list, elem FOR_LOGS(, LOG_ARGS))
 
 #define list_ctor(list) \
@@ -162,7 +165,7 @@ enum List_search_results
        _list_dump(list, output FOR_LOGS(, LOG_ARGS))
 
 #define list_pop_last(list, err) \
-       _list_pop_last(list, err,  LOG_ARGS)
+       _list_pop_last(list, err FOR_LOGS(,LOG_ARGS))
 
 #define list_pop_front(list, err) \
        _list_pop_front(list, err FOR_LOGS(, LOG_ARGS))
@@ -202,9 +205,6 @@ enum List_search_results
 
 #define list_set_prev_to_minus_one(list) \
        _list_set_prev_to_minus_one(list FOR_LOGS(, LOG_ARGS))
-
-#define update_list_pointers_values(list) \
-       _update_list_pointers_values(list FOR_LOGS(, LOG_ARGS)) 
 
 #define list_push_first(list, value, free) \
        _list_push_first(list, value, free FOR_LOGS(, LOG_ARGS))  
@@ -260,7 +260,7 @@ int _list_dump(struct List* list, FILE* output FOR_LOGS(, LOG_PARAMS));
 
 //===================================================================
 
-int _list_search(struct List* list, elem_t* elem FOR_LOGS(, LOG_PARAMS));
+int _list_search(struct List* list, elem_t elem FOR_LOGS(, LOG_PARAMS));
 
 elem_t _list_pop_back(struct List* list, int* err FOR_LOGS(, LOG_PARAMS));
 

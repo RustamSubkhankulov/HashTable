@@ -3,7 +3,7 @@
 //===============================================
 
 #include "../global_conf.h"
-#include "../list/list_conf.h"
+#include "../list/list_config.h"
 
 //===============================================
 
@@ -18,7 +18,7 @@
 //Configuring definitions for hash table 
 
 //Option enables resizing hash table, if fill factor is too big
-#define HASH_TABLE_RESIZE
+//#define HASH_TABLE_RESIZE
 
 static const float Resize_fill_factor = 0.6f;
 
@@ -31,10 +31,10 @@ static const float Resize_fill_factor = 0.6f;
 
 //Hash table initial parameters
 
-static const unsigned int Hash_table_init_cap = 100;
+static const unsigned int Hash_table_init_cap = 8;
 
-static const unsigned int Hash_table_max_cap = 1000;
+static const unsigned int Hash_table_max_cap = 16;
 
 //===============================================
 
-static const unsigned char Hash_table_poison_value = 282; 
+static const unsigned char Hash_table_poison_value = 228; 
