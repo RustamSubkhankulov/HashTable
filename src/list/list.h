@@ -52,6 +52,13 @@ struct List {
 
 //===================================================================
 
+enum List_search_results
+{
+    ELEMENT_NOT_FOUND = -2
+};
+
+//===================================================================
+
 #ifdef LIST_LOGS
 
     #define list_log_report() \
@@ -92,6 +99,9 @@ struct List {
 }
 
 //==================================================================
+
+#define list_search(list, elem) \  
+       _list_search(list, elem FOR_LOGS(, LOG_ARGS))
 
 #define list_ctor(list) \
         _list_ctor(list FOR_LOGS(, LOG_ARGS))
@@ -148,7 +158,7 @@ struct List {
        _list_pop_back(list, err FOR_LOGS(, LOG_ARGS)) 
 
 #define list_dump(list, output) \
-        _list_dump(list, output FOR_LOGS(, LOG_ARGS))
+       _list_dump(list, output FOR_LOGS(, LOG_ARGS))
 
 #define list_pop_last(list, err) \
        _list_pop_last(list, err,  LOG_ARGS)
@@ -248,6 +258,8 @@ int _list_draw_graph_logical(struct List* list FOR_LOGS(, LOG_PARAMS));
 int _list_dump(struct List* list, FILE* output FOR_LOGS(, LOG_PARAMS));
 
 //===================================================================
+
+int _list_search(struct List* list, elem_t* elem FOR_LOGS(, LOG_PARAMS));
 
 elem_t _list_pop_back(struct List* list, int* err FOR_LOGS(, LOG_PARAMS));
 

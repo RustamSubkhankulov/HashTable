@@ -1,4 +1,5 @@
 #include "hash.h"
+#include "../general/general.h"
 
 //===============================================
 
@@ -12,7 +13,12 @@ static int _hash_table_byte_fill (Hash_table* hash_table, unsigned char fill_val
 
 static int _hash_table_reallocate(Hash_table* hash_table, unsigned int New_cap FOR_LOGS(, LOG_PARAMS));
 
+static int _hash_table_increase(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
+
 //===============================================
+
+#define hash_table_increase(hash_table) \
+       _hash_table_increase(hash_table FOR_LOGS(, LOG_ARGS))
 
 #define hash_table_validator(hash_table) \
        _hash_table_validator(hash_table FOR_LOGS(, LOG_ARGS))
@@ -34,14 +40,68 @@ static int _hash_table_reallocate(Hash_table* hash_table, unsigned int new_cap F
     HASH_TABLE_PTR_CHECK(hash_table);
     HASH_TABLE_VALID(hash_table);
     
+    if (new_cap < hash_table->capacity)
+    {
+        error_report(HASH_TABLE_CAP_DECR);
+        return -1;
+    }
 
-    if (new_cap )
+    if (hash_table->capacity == 0)
+    {
+        hash_table->data = (List**) calloc((size_t) new_cap, sizeof(List*));
+    }
+
+    else 
+    {
+        hash_table->data = (List**) my_recalloc(hash_table->data, new_cap, 
+                                                hash_table->capacity, sizeof(List*));
+    }
+
+    if (hash->table == NULL)
+    {
+        error_report(CANNOT_ALLOCATE_MEM);
+        return -1;
+    }
+
+    hash_table->capacity = new_cap;
+
+    return 0;
 }
+
+//-----------------------------------------------
 
 static int _hash_table_validator(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 {
     hash_log_report();
     HASH_TABLE_PTR_CHECK(hash_table);
+
+    int errors_ct = 0;
+
+    if (hash_table->size != 0 && hash_table->capacity == 0)
+    {
+        error_report(HASH_TABLE_INV_CAP_LESS_SIZE);
+        errors_ct += 1;
+    }
+
+    if (hash_table->capacity != 0 && hash_table->data == NULL)
+    {
+        error_report(HASH_TABLE_INV_DATA_PTR);
+        errors_ct += 1;
+    }
+
+    #ifdef HASH_TABLE_DUMP
+
+        if (hash_table->data != NULL)
+        {
+            int ret_val = hash_table_dump(hash_table);
+            if (ret_val == -1)
+                return -1;
+        }
+
+    #endif 
+
+    if (errors_ct != 0 )
+        return -1;
 
     return 0;
 }
@@ -52,6 +112,8 @@ static int _hash_table_dump(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 {
     hash_log_report();
     HASH_TABLE_PTR_CHECK(hash_table);
+
+
 }
 
 //-----------------------------------------------
@@ -61,6 +123,16 @@ int _hash_table_set_hash_func(Hash_tabel* hash_table, uint32_t (*hash_func) (voi
     hash_log_report();
     HASH_TABLE_PTR_CHECK(hash_table);
     HASH_TABLE_VALID(hash_table);
+
+    if (hash_func == NULL)
+    {
+        error_report(INV_HASH_FUNC_PTR);
+        return -1;
+    }
+
+    hash_table->hash_func = hash_func;
+
+    return 0;
 }
 
 //-----------------------------------------------
@@ -137,15 +209,19 @@ int _hash_table_ctor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 
 //-----------------------------------------------
 
-
-
-//-----------------------------------------------
-
 int _hash_table_dtor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 {
     hash_log_report();
     HASH_TABLE_PTR_CHECK(hash_table);
     HASH_TABLE_VALID(hash_table);
+
+    free(hash_table->data);
+
+    int ret_val = hash_tabel_byte_fill(hash_table, Hash_table_poison_value);
+    if (ret_val == -1)
+        return -1;
+    
+    return 0;
 }
 
 //-----------------------------------------------
@@ -155,8 +231,44 @@ int _hash_table_search(Hash_table* hash_table, elem_t elem, List* list FOR_LOGS(
     hash_log_report();
     HASH_TABLE_PTR_CHECK(hash_table);
     HASH_TABLE_VALID(hash_table);
+
+    if (hash_table->size == 0)
+    {
+        list = NULL;
+        return 0;
+    }
+
+    uint32_t hash_value = (hash_table->hash_func) ((void*) &elem, sizeof(elem));
+    list = hash_table->data[hash_value % hash_table->capacity];
+
+    if (list == NULL)
+        return ELEMENT_NOT_FOUND;
+    else 
+    {
+        return list_search(list, elem);
+    }
+
+    return 0;
 }
 
+//-----------------------------------------------
+
+static int _hash_table_increase(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
+{
+    hash_log_report();
+    HASH_TABLE_PTR_CHECK(hash_table);
+
+    float fill_factor = hash_table->size / hash_table->capacity;
+
+    if (fill_factor > Resize_fill_factor)
+    {
+        int ret_val = hash_table_reallocate(hash_table, hash_tabel->capacity * 2);
+        if (ret_val == -1)
+            return -1;
+    }
+
+    return 0;
+}
 //-----------------------------------------------
 
 int _hash_table_insert(Hash_table* hash_table, elem_t elem FOR_LOGS(, LOG_PARAMS))
@@ -164,6 +276,15 @@ int _hash_table_insert(Hash_table* hash_table, elem_t elem FOR_LOGS(, LOG_PARAMS
     hash_log_report();
     HASH_TABLE_PTR_CHECK(hash_table);
     HASH_TABLE_VALID(hash_table);
+
+    #ifdef HASH_TABLE_RESIZE
+
+        int ret_val = hash_table_increase(hash_table);
+        if (ret_val == -1)
+            return -1;
+    #endif 
+
+        
 }
 
 //-----------------------------------------------

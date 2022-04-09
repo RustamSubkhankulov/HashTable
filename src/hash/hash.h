@@ -40,7 +40,7 @@
 
 struct Hash_table 
 {
-    List* data;
+    List** data;
 
     unsigned int size;
     unsigned int capacity;

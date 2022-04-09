@@ -29,6 +29,9 @@ typedef char* elem_t;
 //Specificator for type using in list
 #define ELEM_SPEC "%s"
 
+//Uses strcmp for comparing element in search
+#define STRCMP_COMP
+
 //Starting list capacity
 const size_t List_start_capacity = 24;
 

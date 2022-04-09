@@ -113,6 +113,10 @@ const double Precise = 0.000001;
 
 //===================================================================
 
+#define FLOAT_COMPARE(first, second) (abs(first - second) < Precise)
+
+//===================================================================
+
 #define clean_buffer(buffer, size) {                                \
     do                                                              \
     {                                                               \

@@ -501,12 +501,42 @@ static int _list_prepare_after_increase(struct List* list, size_t prev_capacity 
     }
 
     return 0;
-} 
+}
 
 //===================================================================
 
-int _list_get_by_logical_number(struct List* list, int number, int* err,
-                                                                LOG_PARAMS) {
+int _list_search(struct List* list, elem_t* elem FOR_LOGS(, LOG_PARAMS))
+{
+    list_log_report();
+    LIST_POINTER_CHECK(list);
+
+    if (list_validator(list) == -1)
+        return -1;
+
+    for (unsigned int counter = 0;
+                      counter < list->size;
+                      counter ++)
+    {
+        #ifdef STRCMP_COMP
+
+            if (strcmp(elem, list->data[counter]) == 0)
+                return counter;
+
+        #else 
+
+            if (elem == list->data[counter])
+                return counter;
+
+        #endif 
+    }
+
+    return ELEMENT_NOT_FOUND;
+}
+
+//===================================================================
+
+int _list_get_by_logical_number(struct List* list, int number, int* err
+                                                FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
     LIST_POINTER_CHECK(list);
@@ -662,7 +692,7 @@ static int _list_poisoning(struct List* list FOR_LOGS(, LOG_PARAMS)) {
     for (long unsigned counter = 0; 
                        counter < sizeof(List); counter++) {
 
-        *((char*)list + counter) = (char)LIST_POISON_VALUE;
+        *((char*)list + counter) = (char)POISON_VALUE;
     }
 
     return 0;
@@ -929,7 +959,6 @@ int _list_dtor(struct List* list FOR_LOGS(, LOG_PARAMS)) {
         return -1;
 
     int ret = list_free_memory(list);
-
     if (ret == -1)
         return -1;
 

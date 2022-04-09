@@ -20,6 +20,8 @@
 //Option enables resizing hash table, if fill factor is too big
 #define HASH_TABLE_RESIZE
 
+static const float Resize_fill_factor = 0.6f;
+
 //Calls dump every time hash table being checked with validator
 #define HASH_TABLE_DUMP
 
