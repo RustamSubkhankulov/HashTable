@@ -64,6 +64,22 @@ struct Hash_table
 
 //===============================================
 
+//Testing hash functions
+
+uint32_t one_hash        (void* data, unsigned int size);
+
+uint32_t first_ascii_hash(void* data, unsigned int size);
+
+uint32_t sizeof_hash     (void* data, unsigned int size);
+
+uint32_t ascii_sum_hash  (void* data, unsigned int size);
+
+uint32_t ror_hash        (void* data, unsigned int size);
+
+uint32_t my_hash         (void* data, unsigned int size);
+
+//===============================================
+
 int _hash_table_set_hash_func(Hash_tabel* hash_table, uint32_t (*hash_func) (void*, unsigned int) FOR_LOGS(, LOG_PARAMS));
 
 //===============================================
@@ -74,7 +90,7 @@ int _hash_table_dtor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS));
 
 int _hash_table_search(Hash_table* hash_table, elem_t elem, List* list FOR_LOGS(, LOG_PARAMS));
 
-int _hash_table_insert(Hash_table* hash_table, elem_t elem FOR_LOGS(, LOG_PARAMS));
+int _hash_table_insert(Hash_table* hash_table, elem_t elem, List* list FOR_LOGS(, LOG_PARAMS));
 
 int _hash_table_delete(Hash_table* hash_table, unsigned int index, List* list FOR_LOGS(, LOG_PARAMS));
 

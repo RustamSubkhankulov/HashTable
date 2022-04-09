@@ -33,10 +33,10 @@ typedef char* elem_t;
 #define STRCMP_COMP
 
 //Starting list capacity
-const size_t List_start_capacity = 24;
+const size_t List_start_capacity = 2;
 
 //Max list capacity
-const size_t List_max_capacity = 48;
+const size_t List_max_capacity = 128;
 
 //===================================================================
 

@@ -34,6 +34,57 @@ static int _hash_table_increase(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 
 //===============================================
 
+uint32_t one_hash        (void* data, unsigned int size)
+{
+    return 1;
+}
+
+//-----------------------------------------------
+
+uint32_t first_ascii_hash(void* data, unsigned int size)
+{
+    return (uint32_t)*((unsigned char*)data);
+}
+
+//-----------------------------------------------
+
+uint32_t sizeof_hash     (void* data, unsigned int size)
+{
+    return size;
+}
+
+//-----------------------------------------------
+
+uint32_t ascii_sum_hash  (void* data, unsigned int size)
+{
+    uint32_t result = 0;
+
+    for (unsigned int counter = 0;
+                      counter < size;
+                      counter ++)
+    {
+        result += (uint32_t)*((unsigned char*)data);
+    }
+
+    return result;
+}
+
+//-----------------------------------------------
+
+uint32_t ror_hash        (void* data, unsigned int size)
+{
+    return 0;
+}
+
+//-----------------------------------------------
+
+uint32_t my_hash         (void* data, unsigned int size)
+{
+    return 0;
+}
+
+//===============================================
+
 static int _hash_table_reallocate(Hash_table* hash_table, unsigned int new_cap FOR_LOGS(, LOG_PARAMS))
 {
     hash_log_report();
@@ -203,6 +254,21 @@ int _hash_table_ctor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
     if (ret_val == -1)
         return -1;
 
+    for (unsigned int counter = 0; 
+                      counter < hash_table->capacity;
+                      counter++)
+    {
+        hash_table->data[counter] = (List*) calloc(1, sizeof(List));
+        if (!hash_table->data[counter])
+        {
+            error_report(CANNOT_ALLOCATE_MEM;
+            return -1;
+        }
+
+        if (list_ctor(hash_table->data[counter]) == -1)
+            return -1;
+    }
+
     HASH_TABLE_VALID(hash_table);
     return 0;
 }
@@ -226,7 +292,7 @@ int _hash_table_dtor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 
 //-----------------------------------------------
 
-int _hash_table_search(Hash_table* hash_table, elem_t elem, List* list FOR_LOGS(, LOG_PARAMS))
+int _hash_table_search(Hash_table* hash_table, elem_t elem, List** list FOR_LOGS(, LOG_PARAMS))
 {
     hash_log_report();
     HASH_TABLE_PTR_CHECK(hash_table);
@@ -239,16 +305,9 @@ int _hash_table_search(Hash_table* hash_table, elem_t elem, List* list FOR_LOGS(
     }
 
     uint32_t hash_value = (hash_table->hash_func) ((void*) &elem, sizeof(elem));
-    list = hash_table->data[hash_value % hash_table->capacity];
+    *list = hash_table->data[hash_value % hash_table->capacity];
 
-    if (list == NULL)
-        return ELEMENT_NOT_FOUND;
-    else 
-    {
-        return list_search(list, elem);
-    }
-
-    return 0;
+    return list_search(*list, elem);
 }
 
 //-----------------------------------------------
@@ -259,6 +318,7 @@ static int _hash_table_increase(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
     HASH_TABLE_PTR_CHECK(hash_table);
 
     float fill_factor = hash_table->size / hash_table->capacity;
+    unsigned int prev_cap = hash_table->capacity;
 
     if (fill_factor > Resize_fill_factor)
     {
@@ -267,11 +327,26 @@ static int _hash_table_increase(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
             return -1;
     }
 
+    for (unsigned int counter = prev_cap;
+                      counter < hash_table->capacity;
+                      counter ++)
+    {
+        hash_table->data[counter] = (List*) calloc(1, sizeof(List));        //вынос кода 
+        if (!hash_table->data[counter])                                     // в ctor тоже 
+        {
+            error_report(CANNOT_ALLOCATE_MEM);
+            return -1;
+        }
+
+        if (list_ctor(hash_tabel->data[counter]) == -1)
+            return -1;
+    }
+
     return 0;
 }
 //-----------------------------------------------
 
-int _hash_table_insert(Hash_table* hash_table, elem_t elem FOR_LOGS(, LOG_PARAMS))
+int _hash_table_insert(Hash_table* hash_table, elem_t elem, List* list FOR_LOGS(, LOG_PARAMS))
 {
     hash_log_report();
     HASH_TABLE_PTR_CHECK(hash_table);
@@ -282,9 +357,11 @@ int _hash_table_insert(Hash_table* hash_table, elem_t elem FOR_LOGS(, LOG_PARAMS
         int ret_val = hash_table_increase(hash_table);
         if (ret_val == -1)
             return -1;
-    #endif 
+    #endif  
 
-        
+    hash_table->size += 1;
+
+    return list_push_back(list, elem);
 }
 
 //-----------------------------------------------
@@ -294,15 +371,29 @@ int _hash_table_delete(Hash_table* hash_table, unsigned int index, List* list FO
     hash_log_report();
     HASH_TABLE_PTR_CHECK(hash_table);
     HASH_TABLE_VALID(hash_table);
+
+    hash_table->size -= 1;
+
+    int err = 0;
+    list_pop_by_index(list, index, &err);
+
+    return err;
 }
 
 //-----------------------------------------------
 
-int _hash_table_testing(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
+int _hash_table_testing(Hash_table* hash_table, uint32_t (*hash_func) (void*, unsigned int) FOR_LOGS(, LOG_PARAMS))
 {
     hash_log_report();
     HASH_TABLE_PTR_CHECK(hash_table);
-    HASH_TABLE_VALID(hash_table);
+
+    if (hash_table_ctor(hash_tabel) == -1)
+        return -1;
+
+    if (hash_table_set_hash_func(hash_tabel, hash_func) == -1)
+        return -1;
+
+    
 }
 
 //-----------------------------------------------
