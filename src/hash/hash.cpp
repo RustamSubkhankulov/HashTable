@@ -421,7 +421,14 @@ int _hash_table_testing(Hash_table* hash_table, uint32_t (*hash_func) (void*, un
     if (hash_table_set_hash_func(hash_tabel, hash_func) == -1)
         return -1;
 
-    
+    List** list = NULL;
+    int index = 0;
+
+    index = hash_table_search(hash_table, "privet", list);
+    printf("\n index value : %d \n");
+
+
+
 }
 
 //-----------------------------------------------
