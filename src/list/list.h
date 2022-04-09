@@ -54,7 +54,8 @@ struct List {
 
 enum List_search_results
 {
-    ELEMENT_NOT_FOUND = -2
+    ELEMENT_NOT_FOUND   = -2,
+    NULL_LIST_STRUCTURE = -3,
 };
 
 //===================================================================
