@@ -239,8 +239,8 @@ int _list_get_free(struct  List* list FOR_LOGS(, LOG_PARAMS));
 
 elem_t _list_pop_last(struct List* list, int* err FOR_LOGS(, LOG_PARAMS));  
 
-int _list_push_first(struct List* list, elem_t value, int free, 
-                                                   LOG_PARAMS);   
+int _list_push_first(struct List* list, elem_t value, int free 
+                                        FOR_LOGS(,LOG_PARAMS));   
 
 //===================================================================
 

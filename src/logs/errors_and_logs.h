@@ -44,7 +44,7 @@
 #else
 
     #define error_report(error_code) \
-           _error_report(error_code, __FUNCTION__,  __FILE__, __LINE__);
+           _error_report(error_code, __FUNCTION__,  __FILE__, __LINE__)
 
 #endif
 

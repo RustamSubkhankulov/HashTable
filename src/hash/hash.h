@@ -14,7 +14,7 @@
 
 #else 
 
-    #define hash_log_repotr() ""
+    #define hash_log_report() ""
 
 #endif 
 
@@ -101,13 +101,12 @@ int _hash_table_delete(Hash_table* hash_table, unsigned int index, List* list
 int _hash_table_smart_insert(Hash_table* hash_table, elem_t elem, unsigned int size,
                                                 List** list FOR_LOGS(, LOG_PARAMS));
 
-int _hash_table_compare_hash_func(Hash_table* hash_table, const char* out, const char* src 
-                                                                  FOR_LOGS(, LOG_PARAMS));
+int _hash_table_compare_hash_func(const char* out, const char* src FOR_LOGS(, LOG_PARAMS));
 
 //===============================================
 
-#define hash_table_compare_hash_func(table, out, src) \
-       _hash_table_compare_hash_func(table, out, src FOR_LOGS(, LOG_ARGS))
+#define hash_table_compare_hash_func(out, src) \
+       _hash_table_compare_hash_func(out, src FOR_LOGS(, LOG_ARGS))
 
 #define hash_table_set_hash_func(hash_table, hash_func) \
        _hash_table_set_hash_func(hash_table, hash_func FOR_LOGS(, LOG_ARGS))

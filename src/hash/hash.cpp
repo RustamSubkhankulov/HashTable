@@ -584,8 +584,7 @@ int _hash_table_delete(Hash_table* hash_table, unsigned int index, List* list FO
 
 //-----------------------------------------------
 
-int _hash_table_compare_hash_func(Hash_table* hash_table, const char* out, const char* src 
-                                                                  FOR_LOGS(, LOG_PARAMS))
+int _hash_table_compare_hash_func(const char* out, const char* src FOR_LOGS(, LOG_PARAMS))
 {
     hash_log_report();
     FILENAME_CHECK(out);

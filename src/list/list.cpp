@@ -80,6 +80,8 @@ static int _list_prepare_after_increase(struct List* list, size_t prev_capacity
 
 //===================================================================
 
+#ifdef LIST_GRAPHVIZ
+
 int _list_draw_graph(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     list_log_report();
@@ -241,6 +243,8 @@ int _list_draw_graph_logical(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     return 0;
 }
+
+#endif 
 
 //===================================================================
 
@@ -1272,7 +1276,12 @@ int _list_validator(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     if (err_val != 0) {
 
-        fflush(logs_file);
+        #ifdef LIST_LOGS
+
+            fflush(logs_file);
+
+        #endif 
+
         return 0;
     }
 

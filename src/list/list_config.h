@@ -9,7 +9,7 @@
 
 #ifdef LOGS
 
-    #define LIST_LOGS
+    //#define LIST_LOGS
 
 #endif 
 
@@ -31,14 +31,18 @@ const size_t List_max_capacity = 128;
 
 //LIST OPTIONS
 
-//Calls dump of the list every time validator is called
-//#define LIST_DEBUG
+#ifdef LIST_LOGS
 
-//Hash protection for list
-//#define LIST_HASH
+    //Calls dump of the list every time validator is called
+    #define LIST_DEBUG
 
-//GRAPHVIZ
-//#define LIST_GRAPHVIZ
+    //Hash protection for list
+    //#define LIST_HASH
+
+    //GRAPHVIZ
+    //#define LIST_GRAPHVIZ
+
+#endif 
 
 //#define LIST_PTR_CNTRL
 
