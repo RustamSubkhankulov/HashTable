@@ -5,10 +5,18 @@
 
 //===============================================
 
-#ifdef LIST_LOGS 
+#ifdef LIST_LOGS
 
-    #define lost_log_report() \
-            log_report()
+    #ifdef LIST_ONLY_DUMPS
+
+        #define list_log_report() ""
+
+    #else 
+
+        #define list_log_report() \
+                log_report()
+
+    #endif 
 
 #else 
 
@@ -57,36 +65,6 @@ enum List_search_results
     ELEMENT_NOT_FOUND   = -2,
     NULL_LIST_STRUCTURE = -3,
 };
-
-//===================================================================
-
-#ifdef LIST_LOGS
-
-    #define list_log_report() \
-            log_report()
-
-#else
-
-    #define list_log_report() ""
-
-#endif
-
-//==================================================================
-
-// //Number of command line arguments 
-// #define CMND_LINE_ARGS_NUMBER 2
-
-// //==================================================================
-
-// #define LIST_ARGC_CHECK(argc) {                                     \
-//                                                                     \
-//     if (argc != CMND_LINE_ARGS_NUMBER) {                            \
-//                                                                     \
-//         fprintf(stderr, "Invalid number of "                        \
-//                         "command line arguments\n");                \
-//         return -1;                                                  \
-//     }                                                               \
-// }
 
 //==================================================================
 

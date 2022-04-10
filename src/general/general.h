@@ -10,7 +10,7 @@ const double Precise = 0.000001;
 
 #ifdef LOGS
 
-    #define GENERAL_LOGS
+    //#define GENERAL_LOGS
 
 #endif 
 

@@ -9,8 +9,16 @@
 
 #ifdef HASH_LOGS
 
-    #define hash_log_report() \
-            log_report()
+    #ifdef HASH_ONLY_DUMPS
+
+        #define hash_log_report() ""
+
+    #else 
+
+        #define hash_log_report() \
+                log_report()
+
+    #endif 
 
 #else 
 
@@ -41,7 +49,7 @@
 
 struct Hash_table 
 {
-    List** data;
+    List* data;
 
     unsigned int size;
     unsigned int capacity;
@@ -103,7 +111,12 @@ int _hash_table_smart_insert(Hash_table* hash_table, elem_t elem, unsigned int s
 
 int _hash_table_compare_hash_func(const char* out, const char* src FOR_LOGS(, LOG_PARAMS));
 
+int _hash_table_dump(Hash_table* hash_table, FILE* output FOR_LOGS(, LOG_PARAMS));
+
 //===============================================
+
+#define hash_table_dump(hash_table, output) \
+       _hash_table_dump(hash_table, output FOR_LOGS(, LOG_ARGS))
 
 #define hash_table_compare_hash_func(out, src) \
        _hash_table_compare_hash_func(out, src FOR_LOGS(, LOG_ARGS))

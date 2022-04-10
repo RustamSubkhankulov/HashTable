@@ -25,17 +25,23 @@ static const float Resize_fill_factor = 0.6f;
 #ifdef HASH_LOGS
 
     //Calls dump every time hash table being checked with validator
-    #define HASH_TABLE_DUMP
+    //#define HASH_TABLE_DUMP
+
+    #define HASH_TABLE_LIST_DUMPS
 
 #endif 
 
 #define HASH_TABLE_VALID_CHECK
 
+//
+#define HASH_ONLY_DUMPS
+//
+
 //===============================================
 
 //Hash table initial parameters
 
-static const unsigned int Hash_table_init_cap = 128;
+static const unsigned int Hash_table_init_cap = 8;
 
 static const unsigned int Hash_table_max_cap  = 256;
 
