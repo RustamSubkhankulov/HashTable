@@ -287,8 +287,6 @@ static int _hamlet_count_words(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 	}
 
 	hamlet->number = words_ct;
-	printf("\n words number : %d \n", words_ct);
-	fflush(stdout);
 
 	return 0;
 }
@@ -308,8 +306,6 @@ static int _hamlet_words_init(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 
 	while (*buffer != '\0')
 	{	
-		printf("\n cur symb = %x \n char : \n |%c| \n", *buffer, *buffer);
-
 		if (isalpha(*buffer) && !inword)
 		{
 			word_start = buffer;
@@ -331,14 +327,10 @@ static int _hamlet_words_init(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 
 			char_ct = 0;
 			inword  = 0;
-
-			printf("\n added word |%s| len %d number %d \n ", hamlet->words[words_ct].data, hamlet->words[words_ct].len, hamlet->words[words_ct].num);
-			printf("\n next symb %x \n", *(buffer + 1));
-
 			words_ct++; 
 		}
 
-		buffer++:
+		buffer++;
 	}
 
 
@@ -439,11 +431,11 @@ int _hamlet_print_data(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 	{
 		#ifdef SPLIT_IN_WORDS
 
-			printf("%s\n", hamlet->words[counter].data);
+			printf("%05d: len = %03d |%s| \n", hamlet->words[counter].num, hamlet->words[counter].len, hamlet->words[counter].data);
 
 		#else
 
-			printf("%s\n", hamlet->strings[counter].data);
+			printf("%05d: len = %03d |%s| \n", hamlet->strings[counter].num, hamlet->strings[counter].len, hamlet->strings[counter].data);
 
 		#endif 
 	}
