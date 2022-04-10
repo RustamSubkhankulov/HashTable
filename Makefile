@@ -1,11 +1,14 @@
 CC = gcc 
 
-OBJ = obj/main.o obj/hash.o obj/logs.o obj/general.o obj/list.o obj/list_tests.o 
+OBJ = obj/main.o obj/hash.o obj/logs.o obj/general.o obj/list.o obj/list_tests.o obj/hamlet.o
 
 all: global
 
 global: $(OBJ) 
 	$(CC) $(OBJ) -o hash -fsanitize=bounds -fsanitize=address
+
+obj/hamlet.o: src/hamlet/hamlet.cpp src/global_conf.h src/hamlet/hamlet.h src/hamlet/hamlet_conf.h
+	$(CC) src/hamlet/hamlet.cpp -c -o obj/hamlet.o
 
 obj/main.o: src/main.cpp src/global_conf.h
 	$(CC) src/main.cpp -c -o obj/main.o 

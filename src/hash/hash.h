@@ -3,6 +3,7 @@
 #include "hash_conf.h"
 #include "../logs/errors_and_logs.h"
 #include "../list/list.h"
+#include "../hamlet/hamlet.h"
 
 //===============================================
 

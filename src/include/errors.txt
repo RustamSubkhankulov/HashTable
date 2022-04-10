@@ -732,3 +732,9 @@ Null ptr to list structure in hash_table)
 
 DEF_ERR(1010, HASH_T_MAX_SIZE_REACHED,
 Maximum size of hash table is reached)
+
+DEF_ERR(1100, INV_HAMLET_STRUCTURE_PTR,
+Imvalid pointer to Hamlet structure)
+
+DEF_ERR(1101, NO_STRINGS_IN_TEXT,
+No stings in source text)

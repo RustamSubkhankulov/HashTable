@@ -16,13 +16,7 @@
 
 #define SPLIT_IN_WORDS
 
-//------------------------------------------------
-
-#ifndef SPLIT_IN_WORDS
-
-    #define SPLIT_IN_STRING
-
-#endif 
+//#define SPLIT_IN_STRINGS
 
 //================================================
 

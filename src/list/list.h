@@ -260,7 +260,7 @@ int _list_dump(struct List* list, FILE* output FOR_LOGS(, LOG_PARAMS));
 
 //===================================================================
 
-int _   h(struct List* list, elem_t elem FOR_LOGS(, LOG_PARAMS));
+int _list_search(struct List* list, elem_t elem FOR_LOGS(, LOG_PARAMS));
 
 elem_t _list_pop_back(struct List* list, int* err FOR_LOGS(, LOG_PARAMS));
 

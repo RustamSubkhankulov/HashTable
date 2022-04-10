@@ -58,7 +58,12 @@ int _hamlet_init(struct Hamlet* hamlet, const char* filename
 
 int _hamlet_destruct(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS));
 
+int _hamlet_print_data(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS));
+
 //====================================================================
+
+#define hamlet_print_data(hamlet) \
+	   _hamlet_print_data(hamlet FOR_LOGS(, LOG_ARGS))
 
 #define hamlet_init(hamlet, filename) \
 	   _hamlet_init(hamlet, filename FOR_LOGS(, LOG_ARGS))
