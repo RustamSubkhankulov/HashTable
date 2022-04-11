@@ -15,7 +15,6 @@ int main(int argc, char* argv[])
     #endif 
 
     int ret_val = 0;
-
     ret_val = hash_table_compare_hash_func("text_files/res.txt", 
                                            "text_files/hamlet.txt");
     if (ret_val == -1) return -1;

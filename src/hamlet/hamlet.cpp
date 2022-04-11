@@ -25,7 +25,7 @@
 
 static int _hamlet_load_to_buffer(Hamlet* hamlet, FILE* source FOR_LOGS(, LOG_PARAMS));
 
-static int _get_file_size(FILE* source FOR_LOGS(, LOG_PARAMS));
+static long _get_file_size(FILE* source FOR_LOGS(, LOG_PARAMS));
 
 static int _fill_buffer_from_file(Hamlet* hamlet, FILE* source FOR_LOGS(, LOG_PARAMS));
 
@@ -86,11 +86,10 @@ int _hamlet_init(struct Hamlet* hamlet, const char* filename FOR_LOGS(, LOG_PARA
 	assert(hamlet);
 
 	FILE* source = open_file(filename, "rb");
-	if (!source)
-		return -1;
+	if (!source) return -1;
 
-	if (hamlet_load_to_buffer(hamlet, source) == -1)
-		return -1;
+	int ret_val = hamlet_load_to_buffer(hamlet, source);
+	if (ret_val == -1) return -1;
 
 	return hamlet_split(hamlet);
 }
@@ -132,14 +131,13 @@ static int _hamlet_load_to_buffer(Hamlet* hamlet, FILE* source FOR_LOGS(, LOG_PA
 	assert(hamlet);
 	assert(source);
 
-	int file_size = get_file_size(source);
-	if (file_size == -1)
-		return -1;
+	long file_size = get_file_size(source);
+	if (file_size == -1) return -1;
 
-	hamlet->size = (unsigned int) file_size;
+	hamlet->size = file_size;
 
-	if (fill_buffer_from_file(hamlet, source) == -1)
-		return -1;
+	int ret_val = fill_buffer_from_file(hamlet, source);
+	if (ret_val == -1);
 
 	if (fclose(source) != 0)
 	{
@@ -152,7 +150,7 @@ static int _hamlet_load_to_buffer(Hamlet* hamlet, FILE* source FOR_LOGS(, LOG_PA
 
 //-----------------------------------------------
 
-static int _get_file_size(FILE* source FOR_LOGS(, LOG_PARAMS))
+static long _get_file_size(FILE* source FOR_LOGS(, LOG_PARAMS))
 {
 	hamlet_log_report();
 	assert(source);
@@ -160,9 +158,8 @@ static int _get_file_size(FILE* source FOR_LOGS(, LOG_PARAMS))
 	if (fseek(source, 0, SEEK_END) != 0)
 		return -1;
 
-	int size = ftell(source);
-	if (size == -1)
-		return -1;
+	long size = ftell(source);
+	if (size == -1) return -1;
 
 	rewind(source);
 
@@ -216,8 +213,7 @@ static int _hamlet_count_entities(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 	#else 
 
 		int ret_val = hamlet_count_words(hamlet);
-		if (ret_val == -1)
-			return -1;
+		if (ret_val == -1) return -1;
 
 	#endif 
 
@@ -238,8 +234,7 @@ static int _hamlet_split(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 	#ifdef SPLIT_IN_WORDS
 
 		hamlet->words = (Word*) calloc(hamlet->number, sizeof(Word));
-		if (!hamlet->words)
-			return -1;
+		if (!hamlet->words) return -1;
 
 		if (hamlet_words_init(hamlet) == -1)
 			return -1;
@@ -247,11 +242,10 @@ static int _hamlet_split(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 	#else 
 
 		hamlet->strings = (String*) calloc(hamlet->number, sizeof(String));
-		if (!hamlet->strings)
-			return -1;
+		if (!hamlet->strings) return -1;
 
-		if (hamlet_strings_init(hamlet) == -1)
-			return -1;
+		int ret_val = hamlet_strings_init(hamlet);
+		if (ret_val) == -1;
 
 	#endif 
 

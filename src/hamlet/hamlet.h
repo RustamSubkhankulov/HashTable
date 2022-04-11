@@ -20,8 +20,8 @@ typedef Word String;
 
 struct Hamlet
 {
-	unsigned int number;
-	unsigned int size;
+	unsigned long  number;
+	unsigned long long int size;
 
 	char* buffer;
 

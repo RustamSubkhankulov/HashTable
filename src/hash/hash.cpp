@@ -517,28 +517,29 @@ int _hash_table_compare_hash_func(const char* out, const char* src FOR_LOGS(, LO
     FILENAME_CHECK(src);
 
     FILE* out_file_ptr = open_file(out, "wb");
-    if (!out_file_ptr)
-        return -1;
+    if (!out_file_ptr) return -1;
 
     Hamlet hamlet = { 0 };
     int ret_val = hamlet_init(&hamlet, src);
-    if (ret_val == -1)
-        return -1;
-
-    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, one_hash);
     if (ret_val == -1) return -1;
 
-    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, first_ascii_hash);
-    if (ret_val == -1) return -1;
+    // ret_val = hamlet_print_data(&hamlet);
+    // if (ret_val == -1) return -1;
 
-    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, sizeof_hash);
-    if (ret_val == -1) return -1;
+    // ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, one_hash);
+    // if (ret_val == -1) return -1;
 
-    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, ascii_sum_hash);
-    if (ret_val == -1) return -1;
+    // ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, first_ascii_hash);
+    // if (ret_val == -1) return -1;
 
-    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, ror_hash);
-    if (ret_val == -1) return -1;
+    // ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, sizeof_hash);
+    // if (ret_val == -1) return -1;
+
+    // ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, ascii_sum_hash);
+    // if (ret_val == -1) return -1;
+
+    // ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, ror_hash);
+    // if (ret_val == -1) return -1;
 
     ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, my_hash);
     if (ret_val == -1) return -1;

@@ -25,7 +25,7 @@
 const size_t List_start_capacity = 4;
 
 //Max list capacity
-const size_t List_max_capacity = 128;
+const size_t List_max_capacity = 262144;
 
 //===================================================================
 
