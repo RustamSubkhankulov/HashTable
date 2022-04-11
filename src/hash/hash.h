@@ -74,7 +74,8 @@ struct Hash_table
 
 //===============================================
 
-int _hash_table_set_hash_func(Hash_table* hash_table, uint32_t (*hash_func) (void*, unsigned int) FOR_LOGS(, LOG_PARAMS));
+int _hash_table_set_hash_func(Hash_table* hash_table, uint32_t (*hash_func) (void*, unsigned int) 
+                                                                         FOR_LOGS(, LOG_PARAMS));
 
 //===============================================
 

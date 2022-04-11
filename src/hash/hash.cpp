@@ -16,7 +16,7 @@ static int _hash_table_byte_fill (Hash_table* hash_table, unsigned char fill_val
 
 static int _hash_table_reallocate(Hash_table* hash_table, unsigned int New_cap FOR_LOGS(, LOG_PARAMS));
 
-static int _hash_table_test_hash_func(FILE* out, Hamlet hamlet, uint32_t (*hash_func) (void*, unsigned int) FOR_LOGS(, LOG_PARAMS));
+static int _hash_table_test_hash_func(FILE* out, const Hamlet* hamlet, uint32_t (*hash_func) (void*, unsigned int) FOR_LOGS(, LOG_PARAMS));
 
 static int _hash_table_flush_stats(Hash_table* hash_table, FILE* out FOR_LOGS(, LOG_PARAMS));
 
@@ -525,22 +525,22 @@ int _hash_table_compare_hash_func(const char* out, const char* src FOR_LOGS(, LO
     if (ret_val == -1)
         return -1;
 
-    ret_val = hash_table_test_hash_func(out_file_ptr, hamlet, one_hash);
+    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, one_hash);
     if (ret_val == -1) return -1;
 
-    ret_val = hash_table_test_hash_func(out_file_ptr, hamlet, first_ascii_hash);
+    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, first_ascii_hash);
     if (ret_val == -1) return -1;
 
-    ret_val = hash_table_test_hash_func(out_file_ptr, hamlet, sizeof_hash);
+    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, sizeof_hash);
     if (ret_val == -1) return -1;
 
-    ret_val = hash_table_test_hash_func(out_file_ptr, hamlet, ascii_sum_hash);
+    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, ascii_sum_hash);
     if (ret_val == -1) return -1;
 
-    ret_val = hash_table_test_hash_func(out_file_ptr, hamlet, ror_hash);
+    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, ror_hash);
     if (ret_val == -1) return -1;
 
-    ret_val = hash_table_test_hash_func(out_file_ptr, hamlet, my_hash);
+    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, my_hash);
     if (ret_val == -1) return -1;
 
     ret_val = close_file(out_file_ptr);
@@ -554,11 +554,17 @@ int _hash_table_compare_hash_func(const char* out, const char* src FOR_LOGS(, LO
 
 //-----------------------------------------------
 
-static int _hash_table_test_hash_func(FILE* out, Hamlet hamlet, uint32_t (*hash_func) (void*, unsigned int) 
-                                                                                    FOR_LOGS(, LOG_PARAMS))
+static int _hash_table_test_hash_func(FILE* out, const Hamlet* hamlet, 
+                                      uint32_t (*hash_func) (void*, unsigned int) FOR_LOGS(, LOG_PARAMS))
 {
     hash_log_report();
     FILE_PTR_CHECK(out);
+
+    if (!hamlet)
+    {
+        error_report(INV_HAMLET_STRUCTURE_PTR);
+        return -1;
+    }
 
     if (!hash_func)
     {
@@ -576,20 +582,20 @@ static int _hash_table_test_hash_func(FILE* out, Hamlet hamlet, uint32_t (*hash_
     List* list = NULL;
 
     for (unsigned int counter = 0;
-                      counter < hamlet.number;
+                      counter < hamlet->number;
                       counter++)
     {
         #ifdef SPLIT_IN_WORDS
 
         //printf("\n elem: |" ELEM_SPEC "| p %p size: %d ", hamlet.words[counter].data, hamlet.words[counter].data, hamlet.words[counter].len);
 
-        int ret_val = hash_table_smart_insert(&hash_table, hamlet.words[counter].data, 
-                                                           hamlet.words[counter].len, 
+        int ret_val = hash_table_smart_insert(&hash_table, hamlet->words[counter].data, 
+                                                           hamlet->words[counter].len, 
                                                            &list);
         #else 
 
-        int ret_val = hash_table_smart_insert(&hash_table, hamlet.strings[counter].data, 
-                                                           hamlet.strings[counter].len, 
+        int ret_val = hash_table_smart_insert(&hash_table, hamlet->strings[counter].data, 
+                                                           hamlet->strings[counter].len, 
                                                            &list);
 
         #endif 
