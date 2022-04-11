@@ -14,8 +14,10 @@ int main(int argc, char* argv[])
 
     #endif 
 
-    if (hash_table_compare_hash_func("text_files/res.txt", "text_files/example.txt") == -1)
-        return -1;
+    int ret_val = 0;
+
+    ret_val = hash_table_compare_hash_func("text_files/res.txt", "text_files/example.txt");
+    if (ret_val == -1) return -1;
 
     #ifdef LOGS
         close_log_file();

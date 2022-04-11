@@ -41,7 +41,7 @@ struct List {
 
     int is_linearized;
 
-    #ifdef LIST_DEBUG
+    #ifdef LIST_DUMP
 
         struct List* self_ptr;
 
@@ -63,7 +63,6 @@ struct List {
 enum List_search_results
 {
     ELEMENT_NOT_FOUND   = -2,
-    NULL_LIST_STRUCTURE = -3,
 };
 
 //==================================================================

@@ -536,16 +536,31 @@ int _list_search(struct List* list, elem_t elem FOR_LOGS(, LOG_PARAMS))
     if (list_validator(list) == -1)
         return -1;
 
+    if (list->size == 0)
+        return ELEMENT_NOT_FOUND;
+
     for (unsigned int counter = 0;
-                      counter < list->size;
+                      counter < list->size + 1;
                       counter ++)
     {
         #ifdef STRCMP_COMP
 
         if (list->data[counter] != NULL)
             {
+                // //
+                // if (strcmp("me", elem) == 0)
+                // {
+                //     printf("\n comparing %s %s", elem, list->data[counter]);
+                // }
+                //
+
                 if (strcmp(elem, list->data[counter]) == 0)
                     return counter;
+                // //                
+                // if (strcmp("me", elem) == 0)
+                // {
+                //     printf("\n result %d \n ", strcmp(elem, list->data[counter]));
+                // }
             }
             
         #else 
@@ -1117,7 +1132,7 @@ int _list_ctor(struct List* list FOR_LOGS(, LOG_PARAMS)) {
     if (ret == -1)
         return -1;
         
-    #ifdef LIST_DEBUG
+    #ifdef LIST_DUMP
 
         list->self_ptr = list;
 
@@ -1165,7 +1180,7 @@ int _list_validator(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     #endif
 
-    #ifdef LIST_DEBUG
+    #ifdef LIST_DUMP
 
         if (list != list->self_ptr) {
 
@@ -1263,7 +1278,7 @@ int _list_validator(struct List* list FOR_LOGS(, LOG_PARAMS)) {
         err_val++;
     }
 
-    #ifdef LIST_DEBUG
+    #ifdef LIST_DUMP
 
         if (list != NULL) {
             int ret = list_dump(list, logs_file);

@@ -14,9 +14,9 @@
 
 //================================================
 
-//#define SPLIT_IN_WORDS
+#define SPLIT_IN_WORDS
 
-#define SPLIT_IN_STRINGS
+//#define SPLIT_IN_STRINGS
 
 //================================================
 

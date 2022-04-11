@@ -1,6 +1,6 @@
 CC = gcc 
 
-OBJ = obj/main.o obj/hash.o obj/logs.o obj/general.o obj/list.o obj/list_tests.o obj/hamlet.o
+OBJ = obj/main.o obj/hash.o obj/logs.o obj/general.o obj/list.o obj/list_tests.o obj/hamlet.o obj/hash_func.o
 
 all: global
 
@@ -13,8 +13,11 @@ obj/hamlet.o: src/hamlet/hamlet.cpp src/global_conf.h src/hamlet/hamlet.h src/ha
 obj/main.o: src/main.cpp src/global_conf.h
 	$(CC) src/main.cpp -c -o obj/main.o 
 
-obj/hash.o: src/global_conf.h src/hash/hash.cpp src/hash/hash.h src/hash/hash_conf.h
+obj/hash.o: src/global_conf.h src/hash/hash.cpp src/hash/hash.h src/hash/hash_conf.h src/hash/hash_func.cpp src/hash/hash_func.h
 	$(CC) src/hash/hash.cpp -c -o obj/hash.o 
+
+obj/hash_func.o: src/global_conf.h src/hash/hash.cpp src/hash/hash.h src/hash/hash_conf.h src/hash/hash_func.cpp src/hash/hash_func.h
+	$(CC) src/hash/hash_func.cpp -c -o obj/hash_func.o 
 
 obj/logs.o: src/global_conf.h src/logs/errors_and_logs.cpp src/logs/errors_and_logs.h src/logs/errors.h src/logs/log_definitions.h src/include/errors.txt
 	$(CC) src/logs/errors_and_logs.cpp -c -o obj/logs.o 

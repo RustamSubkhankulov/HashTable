@@ -16,8 +16,6 @@ static int _hash_table_byte_fill (Hash_table* hash_table, unsigned char fill_val
 
 static int _hash_table_reallocate(Hash_table* hash_table, unsigned int New_cap FOR_LOGS(, LOG_PARAMS));
 
-static int _hash_table_increase(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS));
-
 static int _hash_table_test_hash_func(FILE* out, Hamlet hamlet, uint32_t (*hash_func) (void*, unsigned int) FOR_LOGS(, LOG_PARAMS));
 
 static int _hash_table_flush_stats(Hash_table* hash_table, FILE* out FOR_LOGS(, LOG_PARAMS));
@@ -25,6 +23,12 @@ static int _hash_table_flush_stats(Hash_table* hash_table, FILE* out FOR_LOGS(, 
 #ifdef HASH_TABLE_LIST_DUMPS
 
     static int _hash_table_dump_lists(Hash_table* hash_table, FILE* output FOR_LOGS(, LOG_PARAMS));
+
+#endif 
+
+#ifdef HASH_TABLE_INCREASE
+
+    static int _hash_table_increase(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS));
 
 #endif 
 
@@ -53,107 +57,6 @@ static int _hash_table_flush_stats(Hash_table* hash_table, FILE* out FOR_LOGS(, 
 
 #define hash_table_test_hash_func(out, hamlet, hash_func) \
        _hash_table_test_hash_func(out, hamlet, hash_func FOR_LOGS(, LOG_ARGS))
-
-//===============================================
-
-uint32_t one_hash        (void* data, unsigned int size)
-{
-    return 1;
-}
-
-//-----------------------------------------------
-
-uint32_t first_ascii_hash(void* data, unsigned int size)
-{
-    return (uint32_t)*((unsigned char*)data);
-}
-
-//-----------------------------------------------
-
-uint32_t sizeof_hash     (void* data, unsigned int size)
-{
-    return size;
-}
-
-//-----------------------------------------------
-
-uint32_t ascii_sum_hash  (void* data, unsigned int size)
-{
-    uint32_t result = 0;
-
-    for (unsigned int counter = 0;
-                      counter < size;
-                      counter ++)
-    {
-        result += (uint32_t)*((unsigned char*)data);
-    }
-
-    return result;
-}
-
-//-----------------------------------------------
-
-uint32_t ror_hash        (void* data, unsigned int size)
-{
-    return 0;
-}
-
-//-----------------------------------------------
-
-uint32_t my_hash         (void* data, unsigned int size)
-{
-    char* base = (char*)data;
-
-    assert(base);
-
-    const unsigned int m = 0x5bd1e995;
-    const unsigned int seed = 0;
-    const int r = 24;
-
-    unsigned int h = seed ^ (unsigned int)size;
-
-    const unsigned char* ddata = (const unsigned char*)base;
-    unsigned int k = 0;
-
-    while (size >= 4) {
-
-        k = ddata[0];
-        k |= (unsigned)(ddata[1] << 8);
-        k |= (unsigned)(ddata[2] << 16);
-        k |= (unsigned)(ddata[3] << 24);
-
-        k *= m;
-        k ^= k >> r;
-        k *= m;
-
-        h *= m;
-        h ^= k;
-
-        ddata += 4;
-        size -= 4;
-
-    }
-
-    switch (size) {
-        case 3:
-            h ^= (unsigned)(ddata[2] << 16);
-            [[fallthrough]];
-        case 2:
-            h ^= (unsigned)(ddata[1] << 8);
-            [[fallthrough]];
-        case 1:
-            h ^= ddata[0];
-            h *= m;
-            [[fallthrough]];
-        default:;
-    }
-
-    h ^= h >> 13;
-    h *= m;
-    h ^= h >> 15;
-
-    return h;
-}
 
 //===============================================
 
@@ -225,8 +128,8 @@ static int _hash_table_validator(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 
             // else 
             //{
-                if (list_validator(&hash_table->data[counter]) == -1)
-                    return -1;                                //вынос кода
+                int ret_val = list_validator(&hash_table->data[counter]);
+                if (ret_val == -1) return -1;                 //вынос кода
             //}
         }
     } 
@@ -235,8 +138,8 @@ static int _hash_table_validator(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 
         if (hash_table->data != NULL)
         {
-            if (hash_table_dump(hash_table, logs_file) == -1)
-                return -1;
+            int ret_val = hash_table_dump(hash_table, logs_file);
+            if (ret_val == -1) return -1;
         }
 
     #endif 
@@ -336,8 +239,8 @@ static int _hash_table_dump_lists(Hash_table* hash_table, FILE* output FOR_LOGS(
     {
         //if (hash_table->data[counter] != NULL)
         //{
-            if (list_dump(&hash_table->data[counter], output) == -1)
-                return -1;
+            int ret_val = list_dump(&hash_table->data[counter], output);
+            if (ret_val == -1) return -1;
         //}
     }
 
@@ -416,8 +319,8 @@ int _hash_table_ctor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 
     if (is_poisoned)
     {
-        if (hash_table_byte_fill(hash_table, 0x00) == -1)
-            return -1;
+        int ret_val = hash_table_byte_fill(hash_table, 0x00);
+        if (ret_val == -1) return -1;
     }
 
     if (Hash_table_init_cap > Hash_table_max_cap)
@@ -434,8 +337,8 @@ int _hash_table_ctor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
         return -1;
     }
     
-    if (hash_table_reallocate(hash_table, Hash_table_init_cap) == -1)
-        return -1;
+    int ret_val = hash_table_reallocate(hash_table, Hash_table_init_cap);
+    if (ret_val == -1) return -1; 
 
     for (unsigned int counter = 0; 
                       counter < hash_table->capacity;
@@ -448,8 +351,8 @@ int _hash_table_ctor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
         //     return -1;
         // }
 
-        if (list_ctor(&hash_table->data[counter]) == -1)
-            return -1;
+        ret_val = list_ctor(&hash_table->data[counter]);
+        if (ret_val == -1) return -1; 
     }
 
     HASH_TABLE_VALID(hash_table);
@@ -468,16 +371,16 @@ int _hash_table_dtor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
                       counter < hash_table->capacity;
                       counter ++ )
     {
-        if (list_dtor(&hash_table->data[counter]) == -1)
-            return -1;
+        int ret_val = list_dtor(&hash_table->data[counter]);
+        if (ret_val == -1) return -1; 
 
         //free(hash_table->data[counter]);
     }
 
     free(hash_table->data);
 
-    if (hash_table_byte_fill(hash_table, Hash_table_poison_value) == -1)
-        return -1;
+    int ret_val = hash_table_byte_fill(hash_table, Hash_table_poison_value);
+    if (ret_val == -1) return -1;
 
     return 0;
 }
@@ -491,13 +394,20 @@ int _hash_table_search(Hash_table* hash_table, elem_t elem, unsigned int size,
     HASH_TABLE_PTR_CHECK(hash_table);
     HASH_TABLE_VALID(hash_table);
 
-    uint32_t hash_value = (hash_table->hash_func) ((void*) &elem, size);
+    uint32_t hash_value = (hash_table->hash_func) ((void*) elem, size);
     *list = &hash_table->data[hash_value % hash_table->capacity];
 
-    return list_search(*list, elem);
+    //printf(" hash: %u list_index: %u list_address %p", hash_value, hash_value % hash_table->capacity, *list);
+
+    int index = list_search(*list, elem);
+    //printf(" list_search return : %d \n", index);
+
+    return index;
 }
 
 //-----------------------------------------------
+
+#ifdef HASH_TABLE_INCREASE
 
 static int _hash_table_increase(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 {
@@ -509,8 +419,9 @@ static int _hash_table_increase(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
 
     if (fill_factor > Resize_fill_factor)
     {
-        if (hash_table_reallocate(hash_table, hash_table->capacity * 2) == -1)
-            return -1;
+
+        int ret_val = hash_table_reallocate(hash_table, hash_table->capacity * 2);
+        if (ret_val == -1) return -1;
     }
 
     for (unsigned int counter = prev_cap;
@@ -524,12 +435,15 @@ static int _hash_table_increase(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
         //     return -1;
         // }
 
-        if (list_ctor(&hash_table->data[counter]) == -1)
-            return -1;
+        int ret_val = list_ctor(&hash_table->data[counter]);
+        if (ret_val == -1) return -1; 
     }
 
     return 0;
 }
+
+#endif 
+
 //-----------------------------------------------
 
 int _hash_table_insert(Hash_table* hash_table, elem_t elem, List* list 
@@ -541,8 +455,8 @@ int _hash_table_insert(Hash_table* hash_table, elem_t elem, List* list
 
     #ifdef HASH_TABLE_RESIZE
 
-        if (hash_table_increase(hash_table) == -1)
-            return -1;  
+        int is_ok_inc = hash_table_increase(hash_table);
+        if (is_ok_inc == -1) return -1; 
 
     // #else 
 
@@ -611,14 +525,29 @@ int _hash_table_compare_hash_func(const char* out, const char* src FOR_LOGS(, LO
     if (ret_val == -1)
         return -1;
 
-    if (hash_table_test_hash_func(out_file_ptr, hamlet, my_hash) == -1)
-        return -1;
+    ret_val = hash_table_test_hash_func(out_file_ptr, hamlet, one_hash);
+    if (ret_val == -1) return -1;
 
-    if (close_file(out_file_ptr) == -1)
-        return -1;
+    ret_val = hash_table_test_hash_func(out_file_ptr, hamlet, first_ascii_hash);
+    if (ret_val == -1) return -1;
 
-    if (hamlet_destruct(&hamlet) == -1)
-        return -1;
+    ret_val = hash_table_test_hash_func(out_file_ptr, hamlet, sizeof_hash);
+    if (ret_val == -1) return -1;
+
+    ret_val = hash_table_test_hash_func(out_file_ptr, hamlet, ascii_sum_hash);
+    if (ret_val == -1) return -1;
+
+    ret_val = hash_table_test_hash_func(out_file_ptr, hamlet, ror_hash);
+    if (ret_val == -1) return -1;
+
+    ret_val = hash_table_test_hash_func(out_file_ptr, hamlet, my_hash);
+    if (ret_val == -1) return -1;
+
+    ret_val = close_file(out_file_ptr);
+    if (ret_val == -1) return -1;
+
+    ret_val = hamlet_destruct(&hamlet);
+    if (ret_val == -1) return -1;
 
     return 0;
 }
@@ -650,10 +579,12 @@ static int _hash_table_test_hash_func(FILE* out, Hamlet hamlet, uint32_t (*hash_
                       counter < hamlet.number;
                       counter++)
     {
-        #ifdef SPLIT_IN_hamlet
+        #ifdef SPLIT_IN_WORDS
 
-        int ret_val = hash_table_smart_insert(&hash_table, hamlet.hamlet[counter].data, 
-                                                           hamlet.hamlet[counter].len, 
+        //printf("\n elem: |" ELEM_SPEC "| p %p size: %d ", hamlet.words[counter].data, hamlet.words[counter].data, hamlet.words[counter].len);
+
+        int ret_val = hash_table_smart_insert(&hash_table, hamlet.words[counter].data, 
+                                                           hamlet.words[counter].len, 
                                                            &list);
         #else 
 

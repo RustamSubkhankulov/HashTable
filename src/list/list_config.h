@@ -34,16 +34,17 @@ const size_t List_max_capacity = 128;
 #ifdef LIST_LOGS
 
     //Calls dump of the list every time validator is called
-    //#define LIST_DEBUG
-
-    //Hash protection for list
-    //#define LIST_HASH
+    //#define LIST_DUMP
 
     //GRAPHVIZ
     //#define LIST_GRAPHVIZ
 
 #endif 
 
+//Hash protection for list
+//#define LIST_HASH
+
+//Control pointers to allocated memory
 //#define LIST_PTR_CNTRL
 
 //
