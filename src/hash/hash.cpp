@@ -526,20 +526,20 @@ int _hash_table_compare_hash_func(const char* out, const char* src FOR_LOGS(, LO
     // ret_val = hamlet_print_data(&hamlet);
     // if (ret_val == -1) return -1;
 
-    // ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, one_hash);
-    // if (ret_val == -1) return -1;
+    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, one_hash);
+    if (ret_val == -1) return -1;
 
-    // ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, first_ascii_hash);
-    // if (ret_val == -1) return -1;
+    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, first_ascii_hash);
+    if (ret_val == -1) return -1;
 
-    // ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, sizeof_hash);
-    // if (ret_val == -1) return -1;
+    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, sizeof_hash);
+    if (ret_val == -1) return -1;
 
-    // ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, ascii_sum_hash);
-    // if (ret_val == -1) return -1;
+    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, ascii_sum_hash);
+    if (ret_val == -1) return -1;
 
-    // ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, ror_hash);
-    // if (ret_val == -1) return -1;
+    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, ror_hash);
+    if (ret_val == -1) return -1;
 
     ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, my_hash);
     if (ret_val == -1) return -1;
@@ -586,16 +586,16 @@ static int _hash_table_test_hash_func(FILE* out, const Hamlet* hamlet,
                       counter < hamlet->number;
                       counter++)
     {
+        int ret_val = 0;
+
         #ifdef SPLIT_IN_WORDS
 
-        //printf("\n elem: |" ELEM_SPEC "| p %p size: %d ", hamlet.words[counter].data, hamlet.words[counter].data, hamlet.words[counter].len);
-
-        int ret_val = hash_table_smart_insert(&hash_table, hamlet->words[counter].data, 
+            ret_val = hash_table_smart_insert(&hash_table, hamlet->words[counter].data, 
                                                            hamlet->words[counter].len, 
                                                            &list);
         #else 
 
-        int ret_val = hash_table_smart_insert(&hash_table, hamlet->strings[counter].data, 
+            ret_val = hash_table_smart_insert(&hash_table, hamlet->strings[counter].data, 
                                                            hamlet->strings[counter].len, 
                                                            &list);
 
@@ -634,10 +634,13 @@ static int _hash_table_flush_stats(Hash_table* hash_table, FILE* out FOR_LOGS(, 
                       counter < hash_table->capacity;
                       counter ++)
     {
-        fprintf(out, "%d; %d; ", counter, (hash_table->data[counter]).size);
-    }
+        fprintf(out, "%d", (hash_table->data[counter]).size);
 
-    fprintf(out, "\n");
+        if (counter != hash_table->capacity - 1)
+            fprintf(out, ", ");
+        else 
+            fprintf(out, "\n");
+    }
 
     return 0;
 }

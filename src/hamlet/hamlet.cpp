@@ -228,8 +228,8 @@ static int _hamlet_split(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 
 	assert(hamlet);
 
-	if (hamlet_count_entities(hamlet) == -1)
-		return -1;
+	int is_ok_ct = hamlet_count_entities(hamlet);
+	if (is_ok_ct == -1) return -1;
 
 	#ifdef SPLIT_IN_WORDS
 
@@ -262,7 +262,7 @@ static int _hamlet_count_words(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 	assert(hamlet);
 
 	char* buffer = hamlet->buffer;
-	int words_ct = 0;
+	unsigned long long int words_ct = 0;
 	int inword   = 0;
 
 	while (*buffer++ != '\0')
@@ -293,7 +293,7 @@ static int _hamlet_words_init(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 
 	char* buffer = hamlet->buffer;
 
-	int   words_ct   = 0;
+	unsigned long long int words_ct = 0;
 	int   char_ct    = 0;
 	char* word_start = NULL;
 	char  inword     = 0;
@@ -327,7 +327,6 @@ static int _hamlet_words_init(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 		buffer++;
 	}
 
-
 	return 0;
 }
 
@@ -342,7 +341,7 @@ static int _hamlet_strings_init(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 	hamlet_log_report();
 	assert(hamlet);
 
-	int string_ct = 0;
+	unsigned long long string_ct = 0;
 
 	char* string_start = strtok(hamlet->buffer, "\n\r");
 	if (!string_start)
@@ -417,19 +416,23 @@ int _hamlet_print_data(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 	hamlet_log_report();
 	assert(hamlet);
 
-	printf("\n hamlet->number %d \n", hamlet->number);
+	// printf("\n hamlet->number %lld \n", hamlet->number);
 
-	for (unsigned int counter = 0;
-					  counter < hamlet->number;
-					  counter++)
+	for (unsigned long long int counter = 0;
+					            counter < hamlet->number;
+					            counter++)
 	{
 		#ifdef SPLIT_IN_WORDS
 
-			printf("%05d: len = %03d |%s| \n", hamlet->words[counter].num, hamlet->words[counter].len, hamlet->words[counter].data);
+			printf("%05d: len = %03d |%s| \n", hamlet->words[counter].num, 
+											   hamlet->words[counter].len, 
+											   hamlet->words[counter].data);
 
 		#else
 
-			printf("%05d: len = %03d |%s| \n", hamlet->strings[counter].num, hamlet->strings[counter].len, hamlet->strings[counter].data);
+			printf("%05d: len = %03d |%s| \n", hamlet->strings[counter].num, 
+										       hamlet->strings[counter].len, 
+											   hamlet->strings[counter].data);
 
 		#endif 
 	}

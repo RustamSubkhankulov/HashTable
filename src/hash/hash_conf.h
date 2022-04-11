@@ -41,9 +41,9 @@ static const float Resize_fill_factor = 0.6f;
 
 //Hash table initial parameters
 
-static const unsigned int Hash_table_init_cap = 8;
+static const unsigned int Hash_table_init_cap = 256;
 
-static const unsigned int Hash_table_max_cap  = 256;
+static const unsigned int Hash_table_max_cap  = 512;
 
 //===============================================
 
