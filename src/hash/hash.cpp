@@ -130,25 +130,17 @@ static int _hash_table_validator(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
         errors_ct += 1;
     }
 
-    else
-    {
-        for (unsigned int counter = 0;
-                          counter < hash_table->capacity;
-                          counter ++)
-        {
-            // if (!hash_table->data[counter])
-            // {
-            //     error_report(HASH_T_NULL_LIST_PTR);
-            //     errors_ct += 1;
-            // }
+    #ifdef HASH_TABLE_LIST_VALID_CHECK
 
-            // else 
-            //{
-                int ret_val = list_validator(&hash_table->data[counter]);
-                if (ret_val == -1) return -1;                 //вынос кода
-            //}
+        for (unsigned int counter = 0;
+                            counter < hash_table->capacity;
+                            counter ++)
+        {
+            int ret_val = list_validator(&hash_table->data[counter]);
+            if (ret_val == -1) return -1;                    
         }
-    } 
+        
+    #endif 
 
     #ifdef HASH_TABLE_DUMP
 
@@ -567,7 +559,7 @@ int _hash_table_compare_hash_func(const char* out, const char* src FOR_LOGS(, LO
     ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, ascii_sum_hash);
     if (ret_val == -1) return -1;
 
-    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, ror_hash);
+    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, rol_hash);
     if (ret_val == -1) return -1;
 
     ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, my_hash);
@@ -578,6 +570,8 @@ int _hash_table_compare_hash_func(const char* out, const char* src FOR_LOGS(, LO
 
     ret_val = hamlet_destruct(&hamlet);
     if (ret_val == -1) return -1;
+
+    system("python3 python/hist.py text_files/res.txt");
 
     return 0;
 }
@@ -731,16 +725,16 @@ int _hash_table_stress_test(const char* src, uint32_t (*hash_func) (void*, unsig
             return -1;
     }
 
-    clock_t gap_start = clock();
+    // clock_t gap_start = clock();
 
-    #ifdef HASH_LOGS
+    // #ifdef HASH_LOGS
 
-        ret_val = hash_table_dump(hash_table, logs_file);
-        if (ret_val == -1) return -1;
+    //     ret_val = hash_table_dump(hash_table, logs_file);
+    //     if (ret_val == -1) return -1;
 
-    #endif 
+    // #endif 
 
-    clock_t gap = clock() - gap_start;
+    // clock_t gap = clock() - gap_start;
 
     // Search and delete
 
@@ -780,7 +774,7 @@ int _hash_table_stress_test(const char* src, uint32_t (*hash_func) (void*, unsig
         return -1;
     }
 
-    printf("\n TOTAL TIME: %lf \n", (double)(overall_time - gap) / CLOCKS_PER_SEC);
+    printf("\n TOTAL TIME: %lf \n", (double)(overall_time) / CLOCKS_PER_SEC);
 
     return 0;
 }

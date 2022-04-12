@@ -420,9 +420,13 @@ static int _list_decrease(struct List* list FOR_LOGS(, LOG_PARAMS)) {
             return -1;
     #endif
 
-    int is_ok = list_validator(list);
-    if (is_ok == 0)
-        return -1;
+    #ifdef LIST_VALID_CHECK
+
+        int is_ok = list_validator(list);
+        if (is_ok == 0)
+            return -1;
+
+    #endif 
 
     return 0;
 }
@@ -495,9 +499,13 @@ static int _list_increase(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     #endif
 
-    int is_ok = list_validator(list);
-    if (is_ok == 0)
-        return -1;
+    #ifdef LIST_VALID_CHECK
+
+        int is_ok = list_validator(list);
+        if (is_ok == 0)
+            return -1;
+
+    #endif 
 
     return 0;
 }
@@ -533,8 +541,12 @@ int _list_search(struct List* list, elem_t elem FOR_LOGS(, LOG_PARAMS))
     list_log_report();
     LIST_POINTER_CHECK(list);
 
-    if (list_validator(list) == -1)
-        return -1;
+    #ifdef LIST_VALID_CHECK
+
+        if (list_validator(list) == -1)
+            return -1;
+
+    #endif 
 
     //if (strcmp("from", elem) == 0) printf("\n \n LIST SIZE %u \n\n", list->size);
 
@@ -605,12 +617,16 @@ int _list_get_by_logical_number(struct List* list, int number, int* err
         return -1;
     }
 
-    int is_ok = list_validator(list);
-    if (is_ok == 0){
+    #ifdef LIST_VALID_CHECK
 
-        *err = -1;
-        return -1;
-    }
+        int is_ok = list_validator(list);
+        if (is_ok == 0)
+        {
+            *err = -1;
+            return -1;
+        }
+
+    #endif 
 
     if (list->is_linearized) 
 
@@ -638,9 +654,13 @@ int _list_linearize(struct List* list FOR_LOGS(, LOG_PARAMS)) {
     list_log_report();
     LIST_POINTER_CHECK(list);
 
-    int is_ok = list_validator(list);
-    if (is_ok == 0)
-        return -1;
+    #ifdef LIST_VALID_CHECK
+
+        int is_ok = list_validator(list);
+        if (is_ok == 0)
+            return -1;
+
+    #endif 
 
     if (list->is_linearized == 1)
         return 0;
@@ -834,19 +854,6 @@ static int _list_check_free_elements(struct List* list FOR_LOGS(, LOG_PARAMS)) {
     if (counter != free_amount) {
 
         error_report(LIST_INVALID_FREE_AMOUNT);
-        
-    //    // printf("\n counter %d free_amout %d \n", counter, free_amount);
-    //     //
-    //     //
-    //     //
-    //     //
-    //     list_dump(list, logs_file);
-    //     printf("\n list %p \n", list);
-    //     //
-    //     //
-    //     //trash
-    //     //
-
         return 0;
     }
 
@@ -1041,9 +1048,13 @@ int _list_dtor(struct List* list FOR_LOGS(, LOG_PARAMS)) {
     list_log_report();
     LIST_POINTER_CHECK(list);
 
-    int is_ok = list_validator(list);
-    if(is_ok == 0)
-        return -1;
+    #ifdef LiST_VALID_CHECK
+
+        int is_ok = list_validator(list);
+        if(is_ok == 0)
+            return -1;
+
+    #endif 
 
     #ifdef LIST_PTR_CNTRL
 
@@ -1057,7 +1068,11 @@ int _list_dtor(struct List* list FOR_LOGS(, LOG_PARAMS)) {
     if (ret == -1)
         return -1;
 
-    list_poisoning(list);
+    #ifndef LIST_FAST
+
+        list_poisoning(list);
+
+    #endif 
 
     return 0;
 }
@@ -1118,33 +1133,37 @@ int _list_ctor(struct List* list FOR_LOGS(, LOG_PARAMS)) {
     list_log_report();
     LIST_POINTER_CHECK(list);
 
-    int is_poison = list_poison_check(list);
-    int is_clear = list_clear_check(list);
+    #ifndef LIST_FAST
 
-    if (is_clear == 0 && is_poison == 0) {
-        
-        error_report(LIST_UNPREPARED);
-        return -1;
-    }
-    if (is_poison == 1) {
+        int is_poison = list_poison_check(list);
+        int is_clear = list_clear_check(list);
 
-        int ret = list_set_zero(list);
-
-        if (ret == -1)
+        if (is_clear == 0 && is_poison == 0) {
+            
+            error_report(LIST_UNPREPARED);
             return -1;
-    }
+        }
+        if (is_poison == 1) {
+
+            int ret = list_set_zero(list);
+
+            if (ret == -1)
+                return -1;
+        }
+
+        if (List_max_capacity < List_start_capacity) 
+        {
+            error_report(LIST_INV_MAX_CAPACITY);
+            return -1;
+        }
+
+    #endif 
     
     list->head = 0;
     list->tail = 0;
     list->free = 1;
 
     list->is_linearized = 1;
-
-    if (List_max_capacity < List_start_capacity) {
-
-        error_report(LIST_INV_MAX_CAPACITY);
-        return -1;
-    }
 
     list->capacity = List_start_capacity;
     list->size = 0;
@@ -1175,9 +1194,13 @@ int _list_ctor(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     #endif
 
-    int is_ok = list_validator(list);
-    if(is_ok == 0)
-        return -1;
+    #ifdef LIST_VALID_CHECK
+
+        int is_ok = list_validator(list);
+        if(is_ok == 0)
+            return -1;
+
+    #endif 
 
     return 0;
 }
@@ -1545,9 +1568,13 @@ int _list_push_first(struct List* list, elem_t value, int free
 
     #endif
 
-    int is_ok = list_validator(list);
-    if (is_ok == 0)
-        return -1;
+    #ifdef LIST_VALID_CHECK
+
+        int is_ok = list_validator(list);
+        if (is_ok == 0)
+            return -1;
+
+    #endif 
 
     return free;
 }
@@ -1607,12 +1634,16 @@ elem_t _list_pop_last(struct List* list, int* err FOR_LOGS(, LOG_PARAMS)) {
 
     #endif
 
-    int is_ok = list_validator(list);
-    if (is_ok == 0) {
+    #ifdef LIST_VALID_CHECK
 
-        *err = -1;
-        return NULL;
-    }
+        int is_ok = list_validator(list);
+        if (is_ok == 0) 
+        {
+            *err = -1;
+            return NULL;
+        }
+
+    #endif 
 
     return value;
 }
@@ -1664,9 +1695,13 @@ static int _list_push_check(struct List* list, unsigned int index
     list_log_report();
     LIST_POINTER_CHECK(list);
 
-    int is_ok = list_validator(list);
-    if (is_ok == 0)
-        return -1;
+    #ifdef LIST_VALID_CHECK
+
+        int is_ok = list_validator(list);
+        if (is_ok == 0)
+            return -1;
+
+    #endif 
 
     if (index == 0 && list->size != 0) {
 
@@ -1703,9 +1738,13 @@ int _list_push_before_index(struct List* list, unsigned int index, elem_t value
     list_log_report();
     LIST_POINTER_CHECK(list);
 
-    int is_ok = list_push_check(list, index);
-    if (is_ok == 0)
-        return -1;
+    #ifndef LIST_FAST
+
+        int is_ok = list_push_check(list, index);
+        if (is_ok == 0)
+            return -1;
+
+    #endif 
 
     if (list->size == list->capacity - 1) {
 
@@ -1761,9 +1800,13 @@ int _list_push_before_index(struct List* list, unsigned int index, elem_t value
 
     #endif
 
-    is_ok = list_validator(list);
-    if (is_ok == 0)
-        return -1;
+    #ifdef LIST_VALID_CHECK
+
+        is_ok = list_validator(list);
+        if (is_ok == 0)
+            return -1;
+
+    #endif 
 
     return free;
 }
@@ -1776,9 +1819,13 @@ int _list_push_after_index(struct List* list, unsigned int index, elem_t value
     list_log_report();
     LIST_POINTER_CHECK(list);
 
-    int is_ok = list_push_check(list, index);
-    if (is_ok == 0)
-        return -1;
+    #ifndef LIST_FAST
+
+        int is_ok = list_push_check(list, index);
+        if (is_ok == 0)
+            return -1;
+
+    #endif 
 
     if (list->size == list->capacity - 1) {
 
@@ -1827,9 +1874,13 @@ int _list_push_after_index(struct List* list, unsigned int index, elem_t value
 
     #endif
 
-    is_ok = list_validator(list);
-    if (is_ok == 0)
-        return -1;
+    #ifdef LIST_VALID_CHECK
+
+        is_ok = list_validator(list);
+        if (is_ok == 0)
+            return -1;
+
+    #endif 
 
     return free;
 }
@@ -1842,11 +1893,15 @@ static int _list_pop_check(struct List* list, unsigned int index
     list_log_report();
     LIST_POINTER_CHECK(list);
 
-    int is_ok = list_validator(list);
-    if (is_ok == 0) {
+    #ifdef LIST_VALID_CHECK
 
-        return -1;
-    }
+        int is_ok = list_validator(list);
+        if (is_ok == 0) 
+        {
+            return -1;
+        }
+
+    #endif 
 
      if (list->size == 0) {
 
@@ -1882,12 +1937,16 @@ elem_t _list_pop_by_index(struct List* list, unsigned int index, int* err
         return NULL;
     }
 
-    int is_ok = list_pop_check(list, index);
-    if (is_ok == 0) {
+    #ifndef LIST_FAST 
 
-        *err = -1;
-        return NULL;
-    }
+        int is_ok = list_pop_check(list, index);
+        if (is_ok == 0) {
+
+            *err = -1;
+            return NULL;
+        }
+
+    #endif 
 
     if (list->is_linearized == 1
     && list->head == 1
@@ -1947,12 +2006,16 @@ elem_t _list_pop_by_index(struct List* list, unsigned int index, int* err
 
     #endif
 
-    is_ok = list_validator(list);
-    if (is_ok == 0) {
+    #ifdef LIST_VALID_CHECK
 
-        *err = -1;
-        return NULL;
-    }
+        is_ok = list_validator(list);
+        if (is_ok == 0) 
+        {
+            *err = -1;
+            return NULL;
+        }
+
+    #endif 
 
     return value;
 }

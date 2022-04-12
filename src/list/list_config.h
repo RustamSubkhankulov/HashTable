@@ -36,7 +36,7 @@ const size_t List_max_capacity = 262144;
     //Calls dump of the list every time validator is called
     //#define LIST_DUMP
 
-    //GRAPHVIZ
+    //GRAPHVIZ usage for dumps
     //#define LIST_GRAPHVIZ
 
 #endif 
@@ -47,9 +47,14 @@ const size_t List_max_capacity = 262144;
 //Control pointers to allocated memory
 //#define LIST_PTR_CNTRL
 
-//
-#define LIST_ONLY_DUMPS
-//
+// Remove all log report, leave only dumps 
+//#define LIST_ONLY_DUMPS
+
+// Turns on list validator check 
+//#define LIST_VALID_CHECK
+
+// Turns of all additionals checks in ctor, dtor and etc
+#define LIST_FAST
 
 //==================================================================
 

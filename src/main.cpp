@@ -18,14 +18,12 @@ int main(int argc, char* argv[])
 
     int ret_val = 0;
 
-    ret_val = hash_table_compare_hash_func("text_files/res.txt", 
-                                           "text_files/hamlet.txt");
-    if (ret_val == -1) return -1;
-
-    system("python3 python/hist.py text_files/res.txt");
-
-    // ret_val = hash_table_stress_test("text_files/hamlet.txt", my_hash);
+    // ret_val = hash_table_compare_hash_func("text_files/res.txt", 
+    //                                        "text_files/oxford.txt");
     // if (ret_val == -1) return -1;
+
+    ret_val = hash_table_stress_test("text_files/oxford.txt", my_hash);
+    if (ret_val == -1) return -1;
 
     #ifdef LOGS
         close_log_file();
