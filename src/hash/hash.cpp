@@ -409,15 +409,7 @@ int _hash_table_search(Hash_table* hash_table, elem_t elem, unsigned int size,
     HASH_TABLE_VALID(hash_table);
 
     uint32_t hash_value = (hash_table->hash_func) ((void*) elem, size);
-
-    //printf("\n hash %u data %s \n ", hash_value, elem);
-
     *list = &hash_table->data[hash_value % hash_table->capacity];
-
-    // if (strcmp(elem, "from") == 0)
-    // {
-    //     printf("alive before search\n");
-    // }
 
     return list_search(*list, elem);
 }
@@ -543,9 +535,6 @@ int _hash_table_compare_hash_func(const char* out, const char* src FOR_LOGS(, LO
     Hamlet hamlet = { 0 };
     int ret_val = hamlet_init(&hamlet, src);
     if (ret_val == -1) return -1;
-
-    // ret_val = hamlet_print_data(&hamlet);
-    // if (ret_val == -1) return -1;
 
     ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, one_hash);
     if (ret_val == -1) return -1;
@@ -742,13 +731,18 @@ int _hash_table_stress_test(const char* src, uint32_t (*hash_func) (void*, unsig
                             counter < hamlet->number;
                             counter++)
     {
-        ret_val = hash_table_search(hash_table, hamlet->tokens[counter].data, 
-                                                hamlet->tokens[counter].len, 
-                                                &list);
+        for (unsigned int search_ct = 0;
+                          search_ct < 128;
+                          search_ct++)
+        {
+            ret_val = hash_table_search(hash_table, hamlet->tokens[counter].data, 
+                                                    hamlet->tokens[counter].len, 
+                                                    &list);
 
-        if (ret_val == -1)
-            return -1;
-
+            if (ret_val == -1)
+                return -1;
+            
+        }
         // printf("return of search: %02d %s\n", ret_val, hamlet->tokens[counter].data);
 
         if (ret_val == ELEMENT_NOT_FOUND)
