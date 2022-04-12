@@ -418,7 +418,7 @@ int _hash_table_search(Hash_table* hash_table, elem_t elem, unsigned int size,
 
     uint32_t hash_value = (hash_table->hash_func) ((void*) elem, size);
 
-    printf("\n hash %u data %s \n ", hash_value, elem);
+    //printf("\n hash %u data %s \n ", hash_value, elem);
 
     *list = &hash_table->data[hash_value % hash_table->capacity];
 
@@ -530,6 +530,9 @@ int _hash_table_delete(Hash_table* hash_table, unsigned int index, List* list
 
     int err = 0;
     list_pop_by_index(list, index, &err);
+
+    //trash
+    //list_dump(list, logs_file);
 
     return err;
 }
@@ -756,7 +759,7 @@ int _hash_table_stress_test(const char* src, uint32_t (*hash_func) (void*, unsig
         if (ret_val == -1)
             return -1;
 
-        printf("return of search: %02d %s\n", ret_val, hamlet->tokens[counter].data);
+        // printf("return of search: %02d %s\n", ret_val, hamlet->tokens[counter].data);
 
         if (ret_val == ELEMENT_NOT_FOUND)
             continue;

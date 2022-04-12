@@ -814,18 +814,18 @@ static int _list_check_free_elements(struct List* list FOR_LOGS(, LOG_PARAMS)) {
 
     while (free != 0) {
 
-        if (list->prev[free] != -1) {
-
+        if (list->prev[free] != -1) 
+        {
             error_report(LIST_PREV_IS_INCORRECT);
             return 0;
         }
 
         counter++;
 
-        if (counter > free_amount){
-
-        error_report(LIST_INVALID_FREE_AMOUNT);
-        return 0;
+        if (counter > free_amount)
+        {
+            error_report(LIST_INVALID_FREE_AMOUNT);
+            return 0;
         }
 
         free = (unsigned)list->next[free];
@@ -834,6 +834,19 @@ static int _list_check_free_elements(struct List* list FOR_LOGS(, LOG_PARAMS)) {
     if (counter != free_amount) {
 
         error_report(LIST_INVALID_FREE_AMOUNT);
+        
+    //    // printf("\n counter %d free_amout %d \n", counter, free_amount);
+    //     //
+    //     //
+    //     //
+    //     //
+    //     list_dump(list, logs_file);
+    //     printf("\n list %p \n", list);
+    //     //
+    //     //
+    //     //trash
+    //     //
+
         return 0;
     }
 
@@ -1562,7 +1575,7 @@ elem_t _list_pop_last(struct List* list, int* err FOR_LOGS(, LOG_PARAMS)) {
     unsigned int last = list->tail;
 
     list->next[last] = (int)list->free;
-    list->free = last;
+    list->free = 1;
 
     list->prev[last] = -1;
     

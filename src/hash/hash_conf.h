@@ -9,7 +9,7 @@
 
 #ifdef LOGS 
 
-    #define HASH_LOGS
+    //#define HASH_LOGS
 
 #endif 
 
