@@ -621,8 +621,6 @@ static int _hash_table_test_hash_func(FILE* out, const Hamlet* hamlet,
         ret_val = hash_table_smart_insert(&hash_table, hamlet->tokens[counter].data, 
                                                        hamlet->tokens[counter].len, 
                                                        &list);
-
-        
         if (ret_val == -1)
             return -1;
     }
@@ -663,8 +661,6 @@ static int _hash_table_flush_stats(Hash_table* hash_table, FILE* out FOR_LOGS(, 
         else 
             fprintf(out, "\n");
     }
-
-    system("python3 python/hist.py text_files/res.txt");
 
     return 0;
 }
