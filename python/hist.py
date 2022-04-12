@@ -1,21 +1,25 @@
 
 from matplotlib import pyplot as plt
-import numpy as np
+import sys
  
 #------------------------------------------------
 
 #Read input
-src = open("/home/rustam/Desktop/code/HashTable/text_files/res.txt", "r")
+src = open(sys.argv[1], "r")
 
 #Read every value by line
 input = src.readlines()
 src.close()
 
+number = len(input)
+
 #------------------------------------------------
 
-for graph_ct in range (6):
+# 6 graphs for 6 types of hash functions
 
-    y = input[0].split(',')
+for graph_ct in range (number):
+
+    y = input[graph_ct].split(',')
 
     number = len(y)
 
@@ -26,15 +30,14 @@ for graph_ct in range (6):
     for i in range(number):
         x.append(i)
 
-    #print(x)
-    #print(y)
-
     # Creating plot
     plt.plot(x, y)
 
     plt.xlabel('list number')
-
     plt.ylabel('number of elements')
 
-    # Show plot
-    plt.show()
+    # Saveplot
+    plt.savefig('pictures/graph_{}.png'.format(graph_ct))
+    
+    # Clear plot
+    plt.clf()

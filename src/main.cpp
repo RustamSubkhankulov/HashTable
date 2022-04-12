@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "global_conf.h"
 #include "hash/hash.h"
 #include "list/list.h"
@@ -18,6 +20,8 @@ int main(int argc, char* argv[])
     ret_val = hash_table_compare_hash_func("text_files/res.txt", 
                                            "text_files/hamlet.txt");
     if (ret_val == -1) return -1;
+
+    system("python3 python/hist.py text_files/res.txt");
 
     #ifdef LOGS
         close_log_file();

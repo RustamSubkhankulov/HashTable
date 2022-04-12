@@ -74,17 +74,31 @@ struct Hash_table
 
 //===============================================
 
-int _hash_table_set_hash_func(Hash_table* hash_table, uint32_t (*hash_func) (void*, unsigned int) 
-                                                                         FOR_LOGS(, LOG_PARAMS));
+// Performs stress test: insert all unique words from file to hash_table, searches them and then
+// deletes them one by one from hash table
+
+int _hash_table_stress_test(uint32_t (*hash_func) (void*, unsigned int) FOR_LOGS(, LOG_PARAMS));
+
+// Generates 6 graphs for 6 different types of hash functions to compare their characteristics
+
+int _hash_table_compare_hash_func(const char* out, const char* src 
+                                           FOR_LOGS(, LOG_PARAMS));
+
+// Dumps info about hash_tables and lists in html
+
+int _hash_table_dump(Hash_table* hash_table, FILE* output FOR_LOGS(, LOG_PARAMS));
 
 //===============================================
+
+int _hash_table_set_hash_func(Hash_table* hash_table, uint32_t (*hash_func) (void*, unsigned int) 
+                                                                         FOR_LOGS(, LOG_PARAMS));
 
 int _hash_table_ctor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS));
 
 int _hash_table_dtor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS));
 
-int _hash_table_search(Hash_table* hash_table, elem_t elem, unsigned int size, List** list 
-                                                                   FOR_LOGS(, LOG_PARAMS));
+int _hash_table_search(Hash_table* hash_table, elem_t elem, unsigned int size, 
+                                          List** list FOR_LOGS(, LOG_PARAMS));
 
 int _hash_table_insert(Hash_table* hash_table, elem_t elem, List* list 
                                                FOR_LOGS(, LOG_PARAMS));
@@ -94,10 +108,6 @@ int _hash_table_delete(Hash_table* hash_table, unsigned int index, List* list
 
 int _hash_table_smart_insert(Hash_table* hash_table, elem_t elem, unsigned int size,
                                                 List** list FOR_LOGS(, LOG_PARAMS));
-
-int _hash_table_compare_hash_func(const char* out, const char* src FOR_LOGS(, LOG_PARAMS));
-
-int _hash_table_dump(Hash_table* hash_table, FILE* output FOR_LOGS(, LOG_PARAMS));
 
 //===============================================
 

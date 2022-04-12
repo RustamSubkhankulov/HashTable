@@ -100,18 +100,9 @@ int _hamlet_destruct(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 {
 	hamlet_log_report();
 	assert(hamlet);
-
-	#ifdef SPLIT_IN_WORDS
-
-		free(hamlet->words);
-		hamlet->words = NULL;
-
-	#else
-
-		free(hamlet->strings);
-		hamlet->strings = NULL;
-
-	#endif 
+	
+	free(hamlet->tokens);
+	hamlet->tokens = NULL;
 
 	free(hamlet->buffer);
 	hamlet->buffer = NULL;
@@ -228,23 +219,20 @@ static int _hamlet_split(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 
 	assert(hamlet);
 
-	int is_ok_ct = hamlet_count_entities(hamlet);
-	if (is_ok_ct == -1) return -1;
+	int ret_val = hamlet_count_entities(hamlet);
+	if (ret_val == -1) return -1;
+
+	hamlet->strings = (Token*) calloc(hamlet->number, sizeof(Token));
+	if (!hamlet->tokens) return -1;
 
 	#ifdef SPLIT_IN_WORDS
 
-		hamlet->words = (Word*) calloc(hamlet->number, sizeof(Word));
-		if (!hamlet->words) return -1;
-
-		if (hamlet_words_init(hamlet) == -1)
-			return -1;
+		ret_val = hamlet_words_init(hamlet);
+		if (ret_val) == -1;
 
 	#else 
 
-		hamlet->strings = (String*) calloc(hamlet->number, sizeof(String));
-		if (!hamlet->strings) return -1;
-
-		int ret_val = hamlet_strings_init(hamlet);
+		ret_val = hamlet_strings_init(hamlet);
 		if (ret_val) == -1;
 
 	#endif 
@@ -315,9 +303,9 @@ static int _hamlet_words_init(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 		{
 			*buffer = '\0';
 
-			hamlet->words[words_ct].data = word_start;
-			hamlet->words[words_ct].len  = char_ct;
-			hamlet->words[words_ct].num  = words_ct;
+			hamlet->tokens[words_ct].data = word_start;
+			hamlet->tokens[words_ct].len  = char_ct;
+			hamlet->tokens[words_ct].num  = words_ct;
 
 			char_ct = 0;
 			inword  = 0;
@@ -367,9 +355,9 @@ static int _hamlet_strings_init(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 			// printf("added string: |%s|\n", string_start);
 			// fflush(stdout);
 
-			hamlet->strings[string_ct].data = string_start;
-			hamlet->strings[string_ct].len  = strlen(string_start);
-			hamlet->strings[string_ct].num  = string_ct;
+			hamlet->tokens[string_ct].data = string_start;
+			hamlet->tokens[string_ct].len  = strlen(string_start);
+			hamlet->tokens[string_ct].num  = string_ct;
 
 			// printf("\n String data: |%s| len = %d number = %d \n", hamlet->strings[string_ct].data, hamlet->strings[string_ct].len, hamlet->strings[string_ct].num);
 			// fflush(stdout);
@@ -422,19 +410,9 @@ int _hamlet_print_data(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 					            counter < hamlet->number;
 					            counter++)
 	{
-		#ifdef SPLIT_IN_WORDS
-
-			printf("%05d: len = %03d |%s| \n", hamlet->words[counter].num, 
-											   hamlet->words[counter].len, 
-											   hamlet->words[counter].data);
-
-		#else
-
-			printf("%05d: len = %03d |%s| \n", hamlet->strings[counter].num, 
-										       hamlet->strings[counter].len, 
-											   hamlet->strings[counter].data);
-
-		#endif 
+			printf("%05d: len = %03d |%s| \n", hamlet->tokens[counter].num, 
+											   hamlet->tokens[counter].len, 
+											   hamlet->tokens[counter].data);
 	}
 
 	return 0;

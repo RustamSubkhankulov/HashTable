@@ -7,14 +7,12 @@
 
 //===================================================================
 
-struct Word
+struct Token
 {
 	char* data;
 	unsigned int len;
 	unsigned int num;
 };
-
-typedef Word String;
 
 //===================================================================
 
@@ -25,16 +23,7 @@ struct Hamlet
 
 	char* buffer;
 
-	#ifdef SPLIT_IN_WORDS
-
-		Word* words;
-
-	#else 
-
-		String* strings;
-
-	#endif 
-
+	Token* tokens;
 };
 
 //===================================================================
