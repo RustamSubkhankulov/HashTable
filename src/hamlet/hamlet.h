@@ -34,7 +34,7 @@ struct Hamlet
 	{																\
 		if (!hamlet_ptr)											\
 		{															\
-			error_report(INV_HAMLET_STRUCTURE_PRT);					\
+			error_report(INV_HAMLET_STRUCTURE_PTR);					\
 			return -1;												\
 																	\
 		}															\
@@ -47,7 +47,7 @@ int _hamlet_init(struct Hamlet* hamlet, const char* filename
 
 int _hamlet_destruct(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS));
 
-int _hamlet_print_data(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS));
+int _hamlet_print_data(const Hamlet* hamlet FOR_LOGS(, LOG_PARAMS));
 
 //====================================================================
 

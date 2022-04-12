@@ -222,18 +222,18 @@ static int _hamlet_split(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 	int ret_val = hamlet_count_entities(hamlet);
 	if (ret_val == -1) return -1;
 
-	hamlet->strings = (Token*) calloc(hamlet->number, sizeof(Token));
+	hamlet->tokens = (Token*) calloc(hamlet->number, sizeof(Token));
 	if (!hamlet->tokens) return -1;
 
 	#ifdef SPLIT_IN_WORDS
 
 		ret_val = hamlet_words_init(hamlet);
-		if (ret_val) == -1;
+		if (ret_val == -1) return -1;
 
 	#else 
 
 		ret_val = hamlet_strings_init(hamlet);
-		if (ret_val) == -1;
+		if (ret_val == -1) return -1;
 
 	#endif 
 
@@ -399,7 +399,7 @@ static int _str_is_empty(char* string_start FOR_LOGS(, LOG_PARAMS))
 
 //-----------------------------------------------
 
-int _hamlet_print_data(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
+int _hamlet_print_data(const Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 {
 	hamlet_log_report();
 	assert(hamlet);

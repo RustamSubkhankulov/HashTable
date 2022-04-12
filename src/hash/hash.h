@@ -77,7 +77,8 @@ struct Hash_table
 // Performs stress test: insert all unique words from file to hash_table, searches them and then
 // deletes them one by one from hash table
 
-int _hash_table_stress_test(uint32_t (*hash_func) (void*, unsigned int) FOR_LOGS(, LOG_PARAMS));
+int _hash_table_stress_test(const char* src, uint32_t (*hash_func) (void*, unsigned int) 
+                                                                FOR_LOGS(, LOG_PARAMS));
 
 // Generates 6 graphs for 6 different types of hash functions to compare their characteristics
 
@@ -110,6 +111,10 @@ int _hash_table_smart_insert(Hash_table* hash_table, elem_t elem, unsigned int s
                                                 List** list FOR_LOGS(, LOG_PARAMS));
 
 //===============================================
+
+#define hash_table_stress_test(src, hash_func) \
+       _hash_table_stress_test(src, hash_func FOR_LOGS(, LOG_ARGS))
+
 
 #define hash_table_dump(hash_table, output) \
        _hash_table_dump(hash_table, output FOR_LOGS(, LOG_ARGS))

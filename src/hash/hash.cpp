@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 //===============================================
 
@@ -416,7 +417,15 @@ int _hash_table_search(Hash_table* hash_table, elem_t elem, unsigned int size,
     HASH_TABLE_VALID(hash_table);
 
     uint32_t hash_value = (hash_table->hash_func) ((void*) elem, size);
+
+    printf("\n hash %u data %s \n ", hash_value, elem);
+
     *list = &hash_table->data[hash_value % hash_table->capacity];
+
+    // if (strcmp(elem, "from") == 0)
+    // {
+    //     printf("alive before search\n");
+    // }
 
     return list_search(*list, elem);
 }
@@ -596,7 +605,7 @@ static int _hash_table_test_hash_func(FILE* out, const Hamlet* hamlet,
     ret_val = hash_table_ctor(&hash_table);
     if (ret_val == -1) return -1;
 
-    ret_val = (hash_table_set_hash_func(&hash_table, hash_func);
+    ret_val = hash_table_set_hash_func(&hash_table, hash_func);
     if (ret_val == -1) return -1;
 
     List* list = NULL;
@@ -652,6 +661,8 @@ static int _hash_table_flush_stats(Hash_table* hash_table, FILE* out FOR_LOGS(, 
             fprintf(out, "\n");
     }
 
+    system("python3 python/hist.py text_files/res.txt");
+
     return 0;
 }
 
@@ -660,7 +671,7 @@ static int _hash_table_flush_stats(Hash_table* hash_table, FILE* out FOR_LOGS(, 
 int _hash_table_stress_test(const char* src, uint32_t (*hash_func) (void*, unsigned int) 
                                                                  FOR_LOGS(, LOG_PARAMS))
 {
-    hash_table_log_report();
+    hash_log_report();
     FILENAME_CHECK(src);
 
     if (!hash_func)
@@ -673,7 +684,7 @@ int _hash_table_stress_test(const char* src, uint32_t (*hash_func) (void*, unsig
     int ret_val = hash_table_ctor(&hash_table);
     if (ret_val == -1) return -1;
  
-    ret_val = hash_table_set_hash_func(hash_func);
+    ret_val = hash_table_set_hash_func(&hash_table, hash_func);
     if (ret_val == -1) return -1;
 
     Hamlet hamlet = { 0 };
@@ -686,7 +697,7 @@ int _hash_table_stress_test(const char* src, uint32_t (*hash_func) (void*, unsig
     ret_val = hash_table_dtor(&hash_table);
     if (ret_val == -1) return -1;
 
-    ret_val = hamlet_dtor(&hamlet);
+    ret_val = hamlet_destruct(&hamlet);
     if (ret_val == -1) return -1;
 
     return 0;
@@ -697,7 +708,7 @@ int _hash_table_stress_test(const char* src, uint32_t (*hash_func) (void*, unsig
  static int _hash_table_stress_test_perf(const Hamlet* hamlet, Hash_table* hash_table 
                                                               FOR_LOGS(, LOG_PARAMS))
 {
-    hash_table_log_report();
+    hash_log_report();
     HASH_TABLE_PTR_CHECK(hash_table);
     HAMLET_PTR_CHECK(hamlet);
 
@@ -713,13 +724,24 @@ int _hash_table_stress_test(const char* src, uint32_t (*hash_func) (void*, unsig
                             counter < hamlet->number;
                             counter++)
     {
-        ret_val = hash_table_smart_insert(&hash_table, hamlet->tokens[counter].data, 
-                                                       hamlet->tokens[counter].len, 
-                                                       &list);
+        ret_val = hash_table_smart_insert(hash_table, hamlet->tokens[counter].data, 
+                                                      hamlet->tokens[counter].len, 
+                                                      &list);
 
         if (ret_val == -1)
             return -1;
     }
+
+    clock_t gap_start = clock();
+
+    #ifdef HASH_LOGS
+
+        ret_val = hash_table_dump(hash_table, logs_file);
+        if (ret_val == -1) return -1;
+
+    #endif 
+
+    clock_t gap = clock() - gap_start;
 
     // Search and delete
 
@@ -727,37 +749,39 @@ int _hash_table_stress_test(const char* src, uint32_t (*hash_func) (void*, unsig
                             counter < hamlet->number;
                             counter++)
     {
-        ret_val = hash_table_search(&hash_table, hamlet->tokens[counter].data, 
-                                                 hamlet->tokens[counter].len, 
-                                                 &list);
+        ret_val = hash_table_search(hash_table, hamlet->tokens[counter].data, 
+                                                hamlet->tokens[counter].len, 
+                                                &list);
 
         if (ret_val == -1)
             return -1;
 
+        printf("return of search: %02d %s\n", ret_val, hamlet->tokens[counter].data);
+
         if (ret_val == ELEMENT_NOT_FOUND)
             continue;
 
-        const char* poped = list_pop_by_index(list, ret_val, &is_err);
-        
-        if (is_err == -1)
-            return -1;
-
-        else if (strcmp(hamlet->tokens[counter], poped))
-        {
-            printf("\n Poped element is incorrect \n");
-            return -1;
-        }
+        ret_val = hash_table_delete(hash_table, ret_val, list);
+        if (ret_val == -1) return -1;
     }
 
-    clock_t end_time = clock();
+    clock_t overall_time = clock() - start_time;
+
+    #ifdef HASH_LOGS
+
+        ret_val = hash_table_dump(hash_table, logs_file);
+        if (ret_val == -1) return -1;
+
+    #endif 
 
     if (hash_table->size != 0)
     {
-        printf("\n Size of hash_table after deleting all elems is not zero \n");
+        printf("\n Size: %u Size of hash_table after deleting all elems is not zero \n", 
+                                                                      hash_table->size);
         return -1;
     }
 
-    printf("\n TOTAL TIME: %lf \n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+    printf("\n TOTAL TIME: %lf \n", (double)(overall_time - gap) / CLOCKS_PER_SEC);
 
     return 0;
 }

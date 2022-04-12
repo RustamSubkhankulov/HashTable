@@ -5,7 +5,9 @@ OBJ = obj/main.o obj/hash.o obj/logs.o obj/general.o obj/list.o obj/list_tests.o
 all: global
 
 global: $(OBJ) 
-	$(CC) $(OBJ) -o hash -fsanitize=address -fsanitize=bounds
+	$(CC) $(OBJ) -o hash 
+	
+#-fsanitize=address -fsanitize=bounds
 
 obj/hamlet.o: src/hamlet/hamlet.cpp src/global_conf.h src/hamlet/hamlet.h src/hamlet/hamlet_conf.h
 	$(CC) src/hamlet/hamlet.cpp -c -o obj/hamlet.o 

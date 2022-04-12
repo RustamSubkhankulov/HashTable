@@ -536,37 +536,53 @@ int _list_search(struct List* list, elem_t elem FOR_LOGS(, LOG_PARAMS))
     if (list_validator(list) == -1)
         return -1;
 
+    //if (strcmp("from", elem) == 0) printf("\n \n LIST SIZE %u \n\n", list->size);
+
     if (list->size == 0)
         return ELEMENT_NOT_FOUND;
 
+    //if (strcmp("from", elem) == 0) printf("\n \n what is happening \n\n");
+    
+    int cur_index = list->head;
+
     for (unsigned int counter = 0;
-                      counter < list->size + 1;
+                      counter < list->size;
                       counter ++)
     {
         #ifdef STRCMP_COMP
 
-        if (list->data[counter] != NULL)
-            {
-                // //
-                // if (strcmp("me", elem) == 0)
-                // {
-                //     printf("\n comparing %s %s", elem, list->data[counter]);
-                // }
-                //
+            //if (strcmp("from", elem) == 0) printf("\n %p \n ", list->data[counter]);
 
-                if (strcmp(elem, list->data[counter]) == 0)
-                    return counter;
-                // //                
-                // if (strcmp("me", elem) == 0)
+            if (list->data[cur_index] != NULL)
+            {
+                
+                // if (strcmp("from", elem) == 0)
                 // {
-                //     printf("\n result %d \n ", strcmp(elem, list->data[counter]));
+                //     printf("\n comparing %s %s", elem, list->data[cur_index]);
+                // }
+                
+                //if (strcmp("from", elem) == 0) printf("\n cur index %d \n", cur_index);
+
+                //if (strcmp("from", elem) == 0) printf("\n cur data %s elem %s \n", list->data[cur_index], elem);
+
+                if (strcmp(elem, list->data[cur_index]) == 0)
+                    return cur_index;
+                else 
+                    cur_index = list->next[cur_index];
+                
+                               
+                // if (strcmp("from", elem) == 0)
+                // {
+                //     printf("\n result %d \n ", strcmp(elem, list->data[cur_index]));
                 // }
             }
             
         #else 
 
-            if (elem == list->data[counter])
-                return counter;
+            if (elem == list->data[cur_index])
+                return cur_index;
+            else 
+                cur_index = list->next[cur_index];
 
         #endif 
     }
