@@ -27,8 +27,8 @@ list_search_asm:
         cmp word [rdi + 48], 0          ; if size of list is 0
         je .ret_not_found               ; then return -2;
 
-        mov rcx, [rdi + 48]             ; max ct = list->size
-        mov r8,  [rdi + 24]             ; r8 = list->head = cur_index
+        movzx rcx, word [rdi + 48]      ; max ct = list->size
+        movzx r8 , word [rdi + 24]      ; r8 = list->head = cur_index
 
         xor r9, r9                      ; counter
 
@@ -44,14 +44,17 @@ list_search_asm:
         mov r11, [r11 + 8 * r8]         ; r11 = const char* data
 
     .strcmp_loop:
-        mov byte dl, [r10 + r9]
-        mov byte al, [r11 + r9]         ; load values
+        mov byte dl, [r10]
+        mov byte al, [r11]              ; load values
 
-        cmp dl, al                      ; compare bytes
-        je .strcmp_loop                 ; if equal, repeat
+        inc r10
+        inc r11                         ; to next symb
 
         cmp dl, 0                       ; if first reached end
         je .strcmp_stop                 ; jmp to check 2nd
+
+        cmp dl, al                      ; compare bytes
+        je .strcmp_loop                 ; if equal, repeat
 
         jmp .next_iter                  ; else next iteration of compare
 
@@ -60,9 +63,10 @@ list_search_asm:
         je .ret_found                   ; iterate to next compare
 
     .next_iter:
-        mov r10, [rdi + 8]              ; r10 = list->next
-        mov r8, [r10 + 4 * r8]          ; r8 = list->next[cur_index]
+        mov   r10,      [rdi + 8]       ; r10 = list->next
+        movzx r8 , word [r10 + 4 * r8]  ; r8 = list->next[cur_index]
 
+        jmp .loop
     .ret_found:
         mov rax, r8
         ret 

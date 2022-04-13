@@ -10,15 +10,15 @@ OPT_FLAG =
 all: global
 
 global: $(OBJ) 
-	$(CC) $(OBJ) -o hash $(OPT_FLAG) -no-pie
+	$(CC) $(OBJ) -o hash $(OPT_FLAG) -no-pie 
 	
 #-fsanitize=address -fsanitize=bounds
 
 obj/crc32.o: src/hash/crc32.s 
-	nasm src/hash/crc32.s -f elf64 -o obj/crc32.o 
+	nasm src/hash/crc32.s -f elf64 -l listing/crc32.lst -o obj/crc32.o 
 
 obj/search.o: src/list/search.s
-	nasm src/list/search.s -f elf64 -o obj/search.o
+	nasm src/list/search.s -f elf64 -l listing/search.lst -o obj/search.o
 
 obj/hamlet.o: src/hamlet/hamlet.cpp src/global_conf.h src/hamlet/hamlet.h src/hamlet/hamlet_conf.h
 	$(CC) src/hamlet/hamlet.cpp -c -o obj/hamlet.o $(OPT_FLAG)
