@@ -15,32 +15,68 @@ global my_hash
 
 my_hash:
 
+;         push    rbp
+;         mov     rbp, rsp
+;         mov     QWORD [rbp-24], rdi
+;         mov     DWORD [rbp-28], esi
+;         mov     DWORD [rbp-4], -1
+;         mov     rax, QWORD [rbp-24]
+;         mov     QWORD [rbp-16], rax
+;         jmp     .L2
+; .L3:
+;         mov     eax, DWORD [rbp-4]
+;         mov     ecx, eax
+;         mov     rax, QWORD [rbp-16]
+;         lea     rdx, [rax+1]
+;         mov     QWORD [rbp-16], rdx
+;         movzx   eax, BYTE [rax]
+;         xor     eax, ecx
+;         movzx   eax, al
+;         cdqe
+;         mov     edx, DWORD [crc32_look_up + rax * 4]
+;         mov     eax, DWORD [rbp-4]
+;         shr     eax, 8
+;         xor     eax, edx
+;         mov     DWORD [rbp-4], eax
+; .L2:
+;         mov     eax, DWORD [rbp-28]
+;         lea     edx, [rax-1]
+;         mov     DWORD [rbp-28], edx
+;         test    eax, eax
+;         setne   al
+;         test    al, al
+;         jne     .L3
+;         mov     eax, DWORD [rbp-4]
+;         not     eax
+;         pop     rbp
+;         ret
+
         mov rax, 0FFFFFFFFh             ; start value of crc
         xor rcx, rcx                    ; counter for data
 
     .loop:
-        cmp rsi, 0                      ; while size != 0
+        cmp esi, 0                      ; while size != 0
         je .ret
-        dec rsi 
+        dec esi 
 
-        mov r9, rax
+        mov r9, rax                     ; 
         shr r9, 8                       ; crc >> 8
 
-        movzx rdx, ax                   ; lower byte crc
+        movzx rdx, al                   ; lower byte crc
         ;and rdx, byte [crc32_look_up + 4 * rcx]
                                         ; rdx = rdx ^ *(data)
         movzx rax, byte [rdi + rcx]
         inc rcx                         ; data++
 
-        and rax, rdx
+        xor rax, rdx
         mov rax, [crc32_look_up + 4 * rax]
                                         ; value form crc look up table        
         
-        and rax, r9
+        xor rax, r9
         jmp .loop
 
     .ret:
-        neg rax 
+        not rax 
         ret 
 
 
