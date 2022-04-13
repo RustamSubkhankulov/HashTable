@@ -22,7 +22,7 @@
 //LIST PARAMETERS
 
 //Starting list capacity
-const size_t List_start_capacity = 4;
+const size_t List_start_capacity = 16;
 
 //Max list capacity
 const size_t List_max_capacity = 262144;
