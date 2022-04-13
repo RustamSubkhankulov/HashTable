@@ -10,6 +10,10 @@
 
 //===============================================
 
+extern "C" int list_search_asm(struct List* list, elem_t elem); 
+
+//===============================================
+
 static int _hash_table_validator(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS));
 
 static int _hash_table_byte_check(Hash_table* hash_table, unsigned char check_value 
@@ -411,7 +415,7 @@ int _hash_table_search(Hash_table* hash_table, elem_t elem, unsigned int size,
     uint32_t hash_value = (hash_table->hash_func) ((void*) elem, size);
     *list = &hash_table->data[hash_value % hash_table->capacity];
 
-    return list_search(*list, elem);
+    return list_search_asm(*list, elem);
 }
 
 //-----------------------------------------------

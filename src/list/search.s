@@ -4,7 +4,7 @@ section .text
 
 ;================================================
 
-global lst_search
+global list_search_asm
 
 extern srtcmp
 
@@ -15,7 +15,7 @@ extern srtcmp
 ; entry: rdi = list
 ;        rsi = elem
 
-lst_search:
+list_search_asm:
 
         cmp rdi, 0                      ; if list == NULL
         jne .skip1                      ; return -1;
@@ -24,7 +24,7 @@ lst_search:
         ret
 
     .skip1:
-        cmp [rdi + 48], 0               ; if size of list is 0
+        cmp word [rdi + 48], 0          ; if size of list is 0
         je .ret_not_found               ; then return -2;
 
         mov rcx, [rdi + 48]             ; max ct = list->size
