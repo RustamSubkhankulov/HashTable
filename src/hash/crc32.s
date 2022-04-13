@@ -15,42 +15,6 @@ global my_hash
 
 my_hash:
 
-;         push    rbp
-;         mov     rbp, rsp
-;         mov     QWORD [rbp-24], rdi
-;         mov     DWORD [rbp-28], esi
-;         mov     DWORD [rbp-4], -1
-;         mov     rax, QWORD [rbp-24]
-;         mov     QWORD [rbp-16], rax
-;         jmp     .L2
-; .L3:
-;         mov     eax, DWORD [rbp-4]
-;         mov     ecx, eax
-;         mov     rax, QWORD [rbp-16]
-;         lea     rdx, [rax+1]
-;         mov     QWORD [rbp-16], rdx
-;         movzx   eax, BYTE [rax]
-;         xor     eax, ecx
-;         movzx   eax, al
-;         cdqe
-;         mov     edx, DWORD [crc32_look_up + rax * 4]
-;         mov     eax, DWORD [rbp-4]
-;         shr     eax, 8
-;         xor     eax, edx
-;         mov     DWORD [rbp-4], eax
-; .L2:
-;         mov     eax, DWORD [rbp-28]
-;         lea     edx, [rax-1]
-;         mov     DWORD [rbp-28], edx
-;         test    eax, eax
-;         setne   al
-;         test    al, al
-;         jne     .L3
-;         mov     eax, DWORD [rbp-4]
-;         not     eax
-;         pop     rbp
-;         ret
-
         mov rax, 0FFFFFFFFh             ; start value of crc
         xor rcx, rcx                    ; counter for data
 
