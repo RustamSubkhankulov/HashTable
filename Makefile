@@ -1,15 +1,18 @@
 CC = gcc 
 
-OBJ = obj/main.o obj/hash.o obj/logs.o obj/general.o obj/list.o obj/list_tests.o obj/hamlet.o obj/hash_func.o
+OBJ = obj/main.o obj/hash.o obj/logs.o obj/general.o obj/list.o obj/list_tests.o obj/hamlet.o obj/hash_func.o obj/crc32.o
 
 OPT_FLAG = 
 
 all: global
 
 global: $(OBJ) 
-	$(CC) $(OBJ) -o hash $(OPT_FLAG)
+	$(CC) $(OBJ) -o hash $(OPT_FLAG) -no-pie
 	
 #-fsanitize=address -fsanitize=bounds
+
+obj/crc32.o: src/hash/crc32.s 
+	nasm src/hash/crc32.s -f elf64 -o obj/crc32.o 
 
 obj/hamlet.o: src/hamlet/hamlet.cpp src/global_conf.h src/hamlet/hamlet.h src/hamlet/hamlet_conf.h
 	$(CC) src/hamlet/hamlet.cpp -c -o obj/hamlet.o $(OPT_FLAG)

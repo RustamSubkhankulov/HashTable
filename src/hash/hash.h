@@ -8,6 +8,10 @@
 
 //===============================================
 
+extern "C" uint32_t my_hash(void* data, unsigned int size);
+
+//===============================================
+
 #ifdef HASH_LOGS
 
     #ifdef HASH_ONLY_DUMPS
