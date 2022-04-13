@@ -399,7 +399,7 @@ static int _str_is_empty(char* string_start FOR_LOGS(, LOG_PARAMS))
 
 //-----------------------------------------------
 
-int _hamlet_print_data(const Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
+int _hamlet_print_data(const 	Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 {
 	hamlet_log_report();
 	assert(hamlet);
