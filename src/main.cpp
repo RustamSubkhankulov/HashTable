@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     //                                        "text_files/oxford.txt");
     // if (ret_val == -1) return -1;
 
-    ret_val = hash_table_stress_test("text_files/hamlet.txt", my_hash);
+    ret_val = hash_table_stress_test("text_files/oxford.txt", my_hash);
     if (ret_val == -1) return -1;
 
     #ifdef LOGS
