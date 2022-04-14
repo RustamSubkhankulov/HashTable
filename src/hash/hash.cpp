@@ -39,7 +39,6 @@ static int _hash_table_stress_test_perf(const Hamlet* hamlet, Hash_table* hash_t
 
     static int _hash_table_dump_lists(Hash_table* hash_table, FILE* output 
                                                    FOR_LOGS(, LOG_PARAMS));
-
 #endif 
 
 #ifdef HASH_TABLE_INCREASE
@@ -250,11 +249,8 @@ static int _hash_table_dump_lists(Hash_table* hash_table, FILE* output
                       counter < hash_table->capacity;
                       counter ++)
     {
-        //if (hash_table->data[counter] != NULL)
-        //{
-            int ret_val = list_dump(&hash_table->data[counter], output);
-            if (ret_val == -1) return -1;
-        //}
+        int ret_val = list_dump(&hash_table->data[counter], output);
+        if (ret_val == -1) return -1;
     }
 
     return 0;
@@ -362,13 +358,6 @@ int _hash_table_ctor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
                       counter < hash_table->capacity;
                       counter++)
     {
-        // hash_table->data[counter] = (List*) calloc(1, sizeof(List));
-        // if (!hash_table->data[counter])
-        // {
-        //     error_report(CANNOT_ALLOCATE_MEM);
-        //     return -1;
-        // }
-
         ret_val = list_ctor(&hash_table->data[counter]);
         if (ret_val == -1) return -1; 
     }
@@ -391,8 +380,6 @@ int _hash_table_dtor(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
     {
         int ret_val = list_dtor(&hash_table->data[counter]);
         if (ret_val == -1) return -1; 
-
-        //free(hash_table->data[counter]);
     }
 
     free(hash_table->data);
@@ -441,13 +428,6 @@ static int _hash_table_increase(Hash_table* hash_table FOR_LOGS(, LOG_PARAMS))
                       counter < hash_table->capacity;
                       counter ++)
     {
-        // hash_table->data[counter] = (List*) calloc(1, sizeof(List));        //вынос кода 
-        // if (!hash_table->data[counter])                                     // в ctor тоже 
-        // {
-        //     error_report(CANNOT_ALLOCATE_MEM);
-        //     return -1;
-        // }
-
         int ret_val = list_ctor(&hash_table->data[counter]);
         if (ret_val == -1) return -1; 
     }
@@ -470,14 +450,6 @@ int _hash_table_insert(Hash_table* hash_table, elem_t elem, List* list
 
         int is_ok_inc = hash_table_increase(hash_table);
         if (is_ok_inc == -1) return -1; 
-
-    // #else 
-
-    //     if (hash_table->size == hash_table->capacity)
-    //     {
-    //         error_report(HASH_T_MAX_SIZE_REACHED);
-    //         return -1;
-    //     }
 
     #endif
 
@@ -518,9 +490,6 @@ int _hash_table_delete(Hash_table* hash_table, unsigned int index, List* list
 
     int err = 0;
     list_pop_by_index(list, index, &err);
-
-    //trash
-    //list_dump(list, logs_file);
 
     return err;
 }
@@ -747,8 +716,7 @@ int _hash_table_stress_test(const char* src, uint32_t (*hash_func) (void*, unsig
                 return -1;
             
         }
-        // printf("return of search: %02d %s\n", ret_val, hamlet->tokens[counter].data);
-
+        
         if (ret_val == ELEMENT_NOT_FOUND)
             continue;
 

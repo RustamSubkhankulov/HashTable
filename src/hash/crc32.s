@@ -15,34 +15,102 @@ global my_hash
 
 my_hash:
 
-        mov rax, 0FFFFFFFFh             ; start value of crc
-        xor rcx, rcx                    ; counter for data
+        mov eax, 0xFFFFFFFF
 
-    .loop:
-        cmp esi, 0                      ; while size != 0
+        cmp esi, 0
         je .ret
-        dec esi 
 
-        mov r9, rax                     ; 
-        shr r9, 8                       ; crc >> 8
+        mov r11d, esi
+        shr r11d, 2
 
-        movzx rdx, al                   ; lower byte crc
-        ;and rdx, byte [crc32_look_up + 4 * rcx]
-                                        ; rdx = rdx ^ *(data)
-        movzx rax, byte [rdi + rcx]
-        inc rcx                         ; data++
+    .crc32loop:
+        cmp r11d, 0
+        je .crc16
 
-        xor rax, rdx
-        mov rax, [crc32_look_up + 4 * rax]
-                                        ; value form crc look up table        
-        
-        xor rax, r9
-        jmp .loop
+        ;
+        ;xor r10, r10
+        ;
+        mov r10d, dword [rdi]
+        crc32 rax, r10
+        add rdi, 4
+        dec r11d
+
+    .crc16:
+        mov r11d, esi
+        and r11d, 2
+        jz .crc8
+
+        movzx r10, word [rdi]
+        crc32 rax, r10
+        add rdi, 2
+
+    .crc8:
+        and esi, 1
+        jz .ret
+
+        movzx r10, byte [rdi]
+        crc32 rax, r10
 
     .ret:
-        not rax 
+        not eax
         ret 
 
+    ;     mov rax, 0FFFFFFFFh             ; start value of crc
+    ;     xor rcx, rcx                    ; counter for data
+
+    ; .loop:
+    ;     cmp esi, 0                      ; while size != 0
+    ;     je .ret
+    ;     dec esi 
+
+    ;     mov r9, rax                     ; 
+    ;     shr r9, 8                       ; crc >> 8
+
+    ;     movzx rdx, al                   ; lower byte crc
+    ;     ;and rdx, byte [crc32_look_up + 4 * rcx]
+    ;                                     ; rdx = rdx ^ *(data)
+    ;     movzx rax, byte [rdi + rcx]
+    ;     inc rcx                         ; data++
+
+    ;     xor rax, rdx
+    ;     mov rax, [crc32_look_up + 4 * rax]
+    ;                                     ; value form crc look up table        
+        
+    ;     xor rax, r9
+    ;     jmp .loop
+
+    ; .ret:
+    ;     not rax 
+    ;     ret 
+
+
+;================================================
+
+; ZIX_API uint32_t
+; zix_digest_add(uint32_t hash, const void* const buf, const size_t len)
+; {
+; 	const uint8_t* str = (const uint8_t*)buf;
+; #ifdef __SSE4_2__
+; 	// SSE 4.2 CRC32
+; 	for (size_t i = 0; i < (len / sizeof(uint32_t)); ++i) {
+; 		hash = _mm_crc32_u32(hash, *(const uint32_t*)str);
+; 		str += sizeof(uint32_t);
+; 	}
+; 	if (len & sizeof(uint16_t)) {
+; 		hash = _mm_crc32_u16(hash, *(const uint16_t*)str);
+; 		str += sizeof(uint16_t);
+; 	}
+; 	if (len & sizeof(uint8_t)) {
+; 		hash = _mm_crc32_u8(hash, *(const uint8_t*)str);
+; 	}
+; #else
+; 	// Classic DJB hash
+; 	for (size_t i = 0; i < len; ++i) {
+; 		hash = (hash << 5) + hash + str[i];
+; 	}
+; #endif
+; 	return hash;
+; }
 
 ;================================================
 
