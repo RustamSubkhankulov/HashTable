@@ -96,7 +96,7 @@ my_hash:
         je .ret
         dec esi 
 
-        mov r10b, byte [rdi + rcx]
+        movzx r10d, byte [rdi + rcx]
         inc rcx 
 
         crc32 eax, r10b

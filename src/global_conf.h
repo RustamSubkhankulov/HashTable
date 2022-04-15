@@ -22,6 +22,10 @@ typedef const char* elem_t;
 
 //===============================================
 
-static const char* Logfile_name = "hash.html";
+#ifdef LOGS
+
+    static const char* Logfile_name = "hash.html";
+
+#endif 
 
 //===============================================

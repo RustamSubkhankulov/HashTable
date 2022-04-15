@@ -93,18 +93,18 @@
     93                                  
     94                                      .loop:
     95 00000008 83FE00                          cmp esi, 0                      ; while size != 0
-    96 0000000B 7411                            je .ret
+    96 0000000B 7412                            je .ret
     97 0000000D FFCE                            dec esi 
     98                                  
-    99 0000000F 448A140F                        mov r10b, byte [rdi + rcx]
-   100 00000013 48FFC1                          inc rcx 
+    99 0000000F 440FB6140F                      movzx r10d, byte [rdi + rcx]
+   100 00000014 48FFC1                          inc rcx 
    101                                  
-   102 00000016 F2410F38F0C2                    crc32 eax, r10b
-   103 0000001C EBEA                            jmp .loop
+   102 00000017 F2410F38F0C2                    crc32 eax, r10b
+   103 0000001D EBE9                            jmp .loop
    104                                  
    105                                      .ret:
-   106 0000001E F7D0                            not eax 
-   107 00000020 C3                              ret 
+   106 0000001F F7D0                            not eax 
+   107 00000021 C3                              ret 
    108                                  
    109                                  
    110                                  ;================================================
