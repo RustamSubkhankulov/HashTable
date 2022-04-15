@@ -586,7 +586,7 @@ int _hash_table_compare_hash_func(const char* out, const char* src FOR_LOGS(, LO
     ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, ascii_sum_hash);
     if (ret_val == -1) return -1;
 
-    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, crc32_hash);
+    ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, rol_hash);
     if (ret_val == -1) return -1;
 
     ret_val = hash_table_test_hash_func(out_file_ptr, &hamlet, my_hash);
