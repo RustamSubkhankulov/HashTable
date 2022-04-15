@@ -15,45 +15,45 @@
     15                                  
     16                                  my_hash:
     17                                  
-    18 00000000 B8FFFFFFFF                      mov eax, 0xFFFFFFFF
+    18                                      ;     mov eax, 0xFFFFFFFF
     19                                  
-    20 00000005 83FE00                          cmp esi, 0
-    21 00000008 7443                            je .ret
+    20                                      ;     cmp esi, 0
+    21                                      ;     je .ret
     22                                  
-    23 0000000A 4189F3                          mov r11d, esi
-    24 0000000D 41C1EB02                        shr r11d, 2
+    23                                      ;     mov r11d, esi
+    24                                      ;     shr r11d, 2
     25                                  
-    26                                      .crc32loop:
-    27 00000011 4183FB00                        cmp r11d, 0
-    28 00000015 7410                            je .crc16
+    26                                      ; .crc32loop:
+    27                                      ;     cmp r11d, 0
+    28                                      ;     je .crc16
     29                                  
-    30                                          ;
-    31                                          ;xor r10, r10
-    32                                          ;
-    33 00000017 448B17                          mov r10d, dword [rdi]
-    34 0000001A F2410F38F1C2                    crc32 eax, r10d
-    35 00000020 4883C704                        add rdi, 4
-    36 00000024 41FFCB                          dec r11d
+    30                                      ;     ;
+    31                                      ;     ;xor r10, r10
+    32                                      ;     ;
+    33                                      ;     mov r10d, dword [rdi]
+    34                                      ;     crc32 eax, r10d
+    35                                      ;     add rdi, 4
+    36                                      ;     dec r11d
     37                                  
-    38                                      .crc16:
-    39 00000027 4189F3                          mov r11d, esi
-    40 0000002A 4183E302                        and r11d, 2
-    41 0000002E 740E                            jz .crc8
+    38                                      ; .crc16:
+    39                                      ;     mov r11d, esi
+    40                                      ;     and r11d, 2
+    41                                      ;     jz .crc8
     42                                  
-    43 00000030 440FB717                        movzx r10d, word [rdi]
-    44 00000034 F2410F38F1C2                    crc32 eax, r10d
-    45 0000003A 4883C702                        add rdi, 2
+    43                                      ;     movzx r10d, word [rdi]
+    44                                      ;     crc32 eax, r10d
+    45                                      ;     add rdi, 2
     46                                  
-    47                                      .crc8:
-    48 0000003E 83E601                          and esi, 1
-    49 00000041 740A                            jz .ret
+    47                                      ; .crc8:
+    48                                      ;     and esi, 1
+    49                                      ;     jz .ret
     50                                  
-    51 00000043 440FB617                        movzx r10d, byte [rdi]
-    52 00000047 F2410F38F1C2                    crc32 eax, r10d
+    51                                      ;     movzx r10d, byte [rdi]
+    52                                      ;     crc32 eax, r10d
     53                                  
-    54                                      .ret:
-    55 0000004D F7D0                            not eax
-    56 0000004F C3                              ret 
+    54                                      ; .ret:
+    55                                      ;     not eax
+    56                                      ;     ret 
     57                                  
     58                                  ;------------------------------------------------
     59                                  
@@ -88,23 +88,23 @@
     88                                  
     89                                  ;------------------------------------------------
     90                                  
-    91                                      ;     mov eax, 0FFFFFFFFh             ; start value of crc
-    92                                      ;     xor rcx, rcx                    ; counter for data
+    91 00000000 B8FFFFFFFF                      mov eax, 0FFFFFFFFh             ; start value of crc
+    92 00000005 4831C9                          xor rcx, rcx                    ; counter for data
     93                                  
-    94                                      ; .loop:
-    95                                      ;     cmp esi, 0                      ; while size != 0
-    96                                      ;     je .ret
-    97                                      ;     dec esi 
+    94                                      .loop:
+    95 00000008 83FE00                          cmp esi, 0                      ; while size != 0
+    96 0000000B 7411                            je .ret
+    97 0000000D FFCE                            dec esi 
     98                                  
-    99                                      ;     mov r10b, byte [rdi + rcx]
-   100                                      ;     inc rcx 
+    99 0000000F 448A140F                        mov r10b, byte [rdi + rcx]
+   100 00000013 48FFC1                          inc rcx 
    101                                  
-   102                                      ;     crc32 eax, r10b
-   103                                      ;     jmp .loop
+   102 00000016 F2410F38F0C2                    crc32 eax, r10b
+   103 0000001C EBEA                            jmp .loop
    104                                  
-   105                                      ; .ret:
-   106                                      ;     not rax 
-   107                                      ;     ret 
+   105                                      .ret:
+   106 0000001E F7D0                            not eax 
+   107 00000020 C3                              ret 
    108                                  
    109                                  
    110                                  ;================================================

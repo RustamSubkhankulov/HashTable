@@ -128,28 +128,28 @@ static const uint32_t crc_lookup_table[256] =
 
 uint32_t crc32_hash(void* data, unsigned int size)
 {
-//    uint32_t crc = 0xffffffff;
-//    unsigned char* str = (unsigned char*)data;
+   uint32_t crc = 0xffffffff;
+   unsigned char* str = (unsigned char*)data;
 
-// 	while (size-- !=0) 
-//     {
-//         crc = crc_lookup_table[((uint8_t) crc ^ *(str++))] ^ (crc >> 8);
-//     }
-//     return ~crc;
-
-
-    for (size_t i = 0; i < (size / sizeof(uint32_t)); ++i) 
+	while (size-- !=0) 
     {
-		hash = _mm_crc32_u32(hash, *(const uint32_t*)str);
-		str += sizeof(uint32_t);
-	}
+        crc = crc_lookup_table[((uint8_t) crc ^ *(str++))] ^ (crc >> 8);
+    }
+    return ~crc;
 
-	if (size & sizeof(uint16_t)) {
-		hash = _mm_crc32_u16(hash, *(const uint16_t*)str);
-		str += sizeof(uint16_t);
-	}
 
-	if (size & sizeof(uint8_t)) {
-		hash = _mm_crc32_u8(hash, *(const uint8_t*)str);
+//     for (size_t i = 0; i < (size / sizeof(uint32_t)); ++i) 
+//     {
+// 		hash = _mm_crc32_u32(hash, *(const uint32_t*)str);
+// 		str += sizeof(uint32_t);
+// 	}
+
+// 	if (size & sizeof(uint16_t)) {
+// 		hash = _mm_crc32_u16(hash, *(const uint16_t*)str);
+// 		str += sizeof(uint16_t);
+// 	}
+
+// 	if (size & sizeof(uint8_t)) {
+// 		hash = _mm_crc32_u8(hash, *(const uint8_t*)str);
 	
 }

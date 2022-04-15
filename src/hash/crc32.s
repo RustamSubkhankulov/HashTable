@@ -15,45 +15,45 @@ global my_hash
 
 my_hash:
 
-        mov eax, 0xFFFFFFFF
+    ;     mov eax, 0xFFFFFFFF
 
-        cmp esi, 0
-        je .ret
+    ;     cmp esi, 0
+    ;     je .ret
 
-        mov r11d, esi
-        shr r11d, 2
+    ;     mov r11d, esi
+    ;     shr r11d, 2
 
-    .crc32loop:
-        cmp r11d, 0
-        je .crc16
+    ; .crc32loop:
+    ;     cmp r11d, 0
+    ;     je .crc16
 
-        ;
-        ;xor r10, r10
-        ;
-        mov r10d, dword [rdi]
-        crc32 eax, r10d
-        add rdi, 4
-        dec r11d
+    ;     ;
+    ;     ;xor r10, r10
+    ;     ;
+    ;     mov r10d, dword [rdi]
+    ;     crc32 eax, r10d
+    ;     add rdi, 4
+    ;     dec r11d
 
-    .crc16:
-        mov r11d, esi
-        and r11d, 2
-        jz .crc8
+    ; .crc16:
+    ;     mov r11d, esi
+    ;     and r11d, 2
+    ;     jz .crc8
 
-        movzx r10d, word [rdi]
-        crc32 eax, r10d
-        add rdi, 2
+    ;     movzx r10d, word [rdi]
+    ;     crc32 eax, r10d
+    ;     add rdi, 2
 
-    .crc8:
-        and esi, 1
-        jz .ret
+    ; .crc8:
+    ;     and esi, 1
+    ;     jz .ret
 
-        movzx r10d, byte [rdi]
-        crc32 eax, r10d
+    ;     movzx r10d, byte [rdi]
+    ;     crc32 eax, r10d
 
-    .ret:
-        not eax
-        ret 
+    ; .ret:
+    ;     not eax
+    ;     ret 
 
 ;------------------------------------------------
 
@@ -88,23 +88,23 @@ my_hash:
 
 ;------------------------------------------------
 
-    ;     mov eax, 0FFFFFFFFh             ; start value of crc
-    ;     xor rcx, rcx                    ; counter for data
+        mov eax, 0FFFFFFFFh             ; start value of crc
+        xor rcx, rcx                    ; counter for data
 
-    ; .loop:
-    ;     cmp esi, 0                      ; while size != 0
-    ;     je .ret
-    ;     dec esi 
+    .loop:
+        cmp esi, 0                      ; while size != 0
+        je .ret
+        dec esi 
 
-    ;     mov r10b, byte [rdi + rcx]
-    ;     inc rcx 
+        mov r10b, byte [rdi + rcx]
+        inc rcx 
 
-    ;     crc32 eax, r10b
-    ;     jmp .loop
+        crc32 eax, r10b
+        jmp .loop
 
-    ; .ret:
-    ;     not rax 
-    ;     ret 
+    .ret:
+        not eax 
+        ret 
 
 
 ;================================================
