@@ -467,6 +467,9 @@ int _hash_table_smart_insert(Hash_table* hash_table, elem_t elem, unsigned int s
     HASH_TABLE_PTR_CHECK(hash_table);
     HASH_TABLE_VALID(hash_table);
 
+    //printf("\n searching %s \n", elem);
+    //fflush(stdout);
+
     int index = hash_table_search(hash_table, elem, size, list);
     if (index == -1)
         return -1;
@@ -679,6 +682,8 @@ int _hash_table_stress_test(const char* src, uint32_t (*hash_func) (void*, unsig
                             counter < hamlet->number;
                             counter++)
     {
+        //printf("number %lld", counter);
+        //fflush(stdout);
         ret_val = hash_table_smart_insert(hash_table, hamlet->tokens[counter].data, 
                                                       hamlet->tokens[counter].len, 
                                                       &list);

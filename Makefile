@@ -11,7 +11,7 @@ OPT_FLAG =
 all: global
 
 global: $(OBJ) 
-	$(CC) $(OBJ) -o hash $(OPT_FLAG) -no-pie -msse4
+	$(CC) $(OBJ) -o hash $(OPT_FLAG) -no-pie -msse4 
 	
 #-fsanitize=address -fsanitize=bounds
 

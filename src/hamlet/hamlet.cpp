@@ -166,7 +166,7 @@ static int _fill_buffer_from_file(Hamlet* hamlet, FILE* source FOR_LOGS(, LOG_PA
 	assert(hamlet);
 	assert(source);
 
-	hamlet->buffer = (char*) calloc(hamlet->size + 1, sizeof(char));
+	hamlet->buffer = (char*) calloc(hamlet->size + 1 + 15, sizeof(char));
 	if (!hamlet->buffer)
 	{
 		error_report(CANNOT_ALLOCATE_MEM);
@@ -222,7 +222,7 @@ static int _hamlet_split(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 	int ret_val = hamlet_count_entities(hamlet);
 	if (ret_val == -1) return -1;
 
-	hamlet->tokens = (Token*) calloc(hamlet->number, sizeof(Token));
+	hamlet->tokens = (Token*) calloc(hamlet->number + 1, sizeof(Token));
 	if (!hamlet->tokens) return -1;
 
 	#ifdef SPLIT_IN_WORDS
@@ -306,6 +306,13 @@ static int _hamlet_words_init(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 			hamlet->tokens[words_ct].data = word_start;
 			hamlet->tokens[words_ct].len  = char_ct;
 			hamlet->tokens[words_ct].num  = words_ct;
+
+			// if (&hamlet->tokens[words_ct] == (Token*)0x5d4a4d0
+			//   | &hamlet->tokens[words_ct] == (Token*)0x5d4a4d8 
+			//   | &hamlet->tokens[words_ct] == (Token*)0x5d4a4dc)
+			// {
+			// 	printf("\n hamlet->tokens[words_ct] = |%s| \n", hamlet->tokens[words_ct].data);
+			// }
 
 			char_ct = 0;
 			inword  = 0;
