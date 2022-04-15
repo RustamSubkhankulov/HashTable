@@ -31,7 +31,7 @@
     31                                          ;xor r10, r10
     32                                          ;
     33 00000017 448B17                          mov r10d, dword [rdi]
-    34 0000001A F2490F38F1C2                    crc32 rax, r10
+    34 0000001A F2410F38F1C2                    crc32 eax, r10d
     35 00000020 4883C704                        add rdi, 4
     36 00000024 41FFCB                          dec r11d
     37                                  
@@ -40,195 +40,218 @@
     40 0000002A 4183E302                        and r11d, 2
     41 0000002E 740E                            jz .crc8
     42                                  
-    43 00000030 4C0FB717                        movzx r10, word [rdi]
-    44 00000034 F2490F38F1C2                    crc32 rax, r10
+    43 00000030 440FB717                        movzx r10d, word [rdi]
+    44 00000034 F2410F38F1C2                    crc32 eax, r10d
     45 0000003A 4883C702                        add rdi, 2
     46                                  
     47                                      .crc8:
     48 0000003E 83E601                          and esi, 1
     49 00000041 740A                            jz .ret
     50                                  
-    51 00000043 4C0FB617                        movzx r10, byte [rdi]
-    52 00000047 F2490F38F1C2                    crc32 rax, r10
+    51 00000043 440FB617                        movzx r10d, byte [rdi]
+    52 00000047 F2410F38F1C2                    crc32 eax, r10d
     53                                  
     54                                      .ret:
     55 0000004D F7D0                            not eax
     56 0000004F C3                              ret 
     57                                  
-    58                                      ;     mov rax, 0FFFFFFFFh             ; start value of crc
-    59                                      ;     xor rcx, rcx                    ; counter for data
-    60                                  
-    61                                      ; .loop:
-    62                                      ;     cmp esi, 0                      ; while size != 0
-    63                                      ;     je .ret
-    64                                      ;     dec esi 
-    65                                  
-    66                                      ;     mov r9, rax                     ; 
-    67                                      ;     shr r9, 8                       ; crc >> 8
-    68                                  
-    69                                      ;     movzx rdx, al                   ; lower byte crc
-    70                                      ;     ;and rdx, byte [crc32_look_up + 4 * rcx]
-    71                                      ;                                     ; rdx = rdx ^ *(data)
-    72                                      ;     movzx rax, byte [rdi + rcx]
-    73                                      ;     inc rcx                         ; data++
-    74                                  
-    75                                      ;     xor rax, rdx
-    76                                      ;     mov rax, [crc32_look_up + 4 * rax]
-    77                                      ;                                     ; value form crc look up table        
-    78                                          
-    79                                      ;     xor rax, r9
-    80                                      ;     jmp .loop
-    81                                  
-    82                                      ; .ret:
-    83                                      ;     not rax 
-    84                                      ;     ret 
-    85                                  
-    86                                  
-    87                                  ;================================================
+    58                                  ;------------------------------------------------
+    59                                  
+    60                                      ;     mov eax, 0FFFFFFFFh             ; start value of crc
+    61                                      ;     xor rcx, rcx                    ; counter for data
+    62                                  
+    63                                      ; .loop:
+    64                                      ;     cmp esi, 0                      ; while size != 0
+    65                                      ;     je .ret
+    66                                      ;     dec esi 
+    67                                  
+    68                                      ;     mov r9d, eax                    ; 
+    69                                      ;     shr r9d, 8                      ; crc >> 8
+    70                                  
+    71                                      ;     mov edx, eax                    ; lower byte crc
+    72                                      ;     ;and rdx, byte [crc32_look_up + 4 * rcx]
+    73                                      ;                                     ; rdx = rdx ^ *(data)
+    74                                      ;     movzx eax, byte [rdi + rcx]
+    75                                      ;     inc rcx                         ; data++
+    76                                  
+    77                                      ;     xor eax, edx
+    78                                      ;     and eax, 0xFF
+    79                                      ;     mov eax, [crc32_look_up + 4 * eax]
+    80                                      ;                                     ; value form crc look up table        
+    81                                          
+    82                                      ;     xor eax, r9d
+    83                                      ;     jmp .loop
+    84                                  
+    85                                      ; .ret:
+    86                                      ;     not rax 
+    87                                      ;     ret 
     88                                  
-    89                                  ; ZIX_API uint32_t
-    90                                  ; zix_digest_add(uint32_t hash, const void* const buf, const size_t len)
-    91                                  ; {
-    92                                  ; 	const uint8_t* str = (const uint8_t*)buf;
-    93                                  ; #ifdef __SSE4_2__
-    94                                  ; 	// SSE 4.2 CRC32
-    95                                  ; 	for (size_t i = 0; i < (len / sizeof(uint32_t)); ++i) {
-    96                                  ; 		hash = _mm_crc32_u32(hash, *(const uint32_t*)str);
-    97                                  ; 		str += sizeof(uint32_t);
-    98                                  ; 	}
-    99                                  ; 	if (len & sizeof(uint16_t)) {
-   100                                  ; 		hash = _mm_crc32_u16(hash, *(const uint16_t*)str);
-   101                                  ; 		str += sizeof(uint16_t);
-   102                                  ; 	}
-   103                                  ; 	if (len & sizeof(uint8_t)) {
-   104                                  ; 		hash = _mm_crc32_u8(hash, *(const uint8_t*)str);
-   105                                  ; 	}
-   106                                  ; #else
-   107                                  ; 	// Classic DJB hash
-   108                                  ; 	for (size_t i = 0; i < len; ++i) {
-   109                                  ; 		hash = (hash << 5) + hash + str[i];
-   110                                  ; 	}
-   111                                  ; #endif
-   112                                  ; 	return hash;
-   113                                  ; }
-   114                                  
-   115                                  ;================================================
-   116                                  
-   117                                  section .data 
-   118                                  
-   182 00000000 00000000963007772C-     crc32_look_up: dd 0, 0x77073096, 0xEE0E612C, 0x990951BA,          0x076DC419, 0x706AF48F, 0xE963A535, 0x9E6495A3,          0x0EDB8832, 0x79DCB8A4, 0xE0D5E91E, 0x97D2D988,          0x09B64C2B, 0x7EB17CBD, 0xE7B82D07, 0x90BF1D91,          0x1DB71064, 0x6AB0
-   182 00000009 610EEEBA51099919C4-
-   182 00000012 6D078FF46A7035A563-
-   182 0000001B E9A395649E3288DB0E-
-   182 00000024 A4B8DC791EE9D5E088-
-   182 0000002D D9D2972B4CB609BD7C-
-   182 00000036 B17E072DB8E7911DBF-
-   182 0000003F 906410B71DF220B06A-
-   182 00000048 4871B9F3DE41BE847D-
-   182 00000051 D4DA1AEBE4DD6D51B5-
-   182 0000005A D4F4C785D38356986C-
-   182 00000063 13C0A86B647AF962FD-
-   182 0000006C ECC9658A4F5C0114D9-
-   182 00000075 6C0663633D0FFAF50D-
-   182 0000007E 088DC8206E3B5E1069-
-   182 00000087 4CE44160D5727167A2-
-   182 00000090 D1E4033C47D4044BFD-
-   182 00000099 850DD26BB50AA5FAA8-
-   182 000000A2 B5356C98B242D6C9BB-
-   182 000000AB DB40F9BCACE36CD832-
-   182 000000B4 755CDF45CF0DD6DC59-
-   182 000000BD 3DD1ABAC30D9263A00-
-   182 000000C6 DE518051D7C81661D0-
-   182 000000CF BFB5F4B42123C4B356-
-   182 000000D8 9995BACF0FA5BDB89E-
-   182 000000E1 B802280888055FB2D9-
-   182 000000EA 0CC624E90BB1877C6F-
-   182 000000F3 2F114C6858AB1D61C1-
-   182 000000FC 3D2D66B69041DC7606-
-   182 00000105 71DB01BC20D2982A10-
-   182 0000010E D5EF8985B1711FB5B6-
-   182 00000117 06A5E4BF9F33D4B8E8-
-   182 00000120 A2C9077834F9000F8E-
-   182 00000129 A8099618980EE1BB0D-
-   182 00000132 6A7F2D3D6D08976C64-
-   182 0000013B 91015C63E6F4516B6B-
-   182 00000144 62616C1CD83065854E-
-   182 0000014D 0062F2ED95066C7BA5-
-   182 00000156 011BC1F4088257C40F-
-   182 0000015F F5C6D9B06550E9B712-
-   182 00000168 EAB8BE8B7C88B9FCDF-
-   182 00000171 1DDD62492DDA15F37C-
-   182 0000017A D38C654CD4FB5861B2-
-   182 00000183 4DCE51B53A7400BCA3-
-   182 0000018C E230BBD441A5DF4AD7-
-   182 00000195 95D83D6DC4D1A4FBF4-
-   182 0000019E D6D36AE96943FCD96E-
-   182 000001A7 34468867ADD0B860DA-
-   182 000001B0 732D0444E51D03335F-
-   182 000001B9 4C0AAAC97C0DDD3C71-
-   182 000001C2 0550AA41022710100B-
-   182 000001CB BE86200CC925B56857-
-   182 000001D4 B3856F2009D466B99F-
-   182 000001DD E461CE0EF9DE5E98C9-
-   182 000001E6 D9292298D0B0B4A8D7-
-   182 000001EF C7173DB359810DB42E-
-   182 000001F8 3B5CBDB7AD6CBAC020-
-   182 00000201 83B8EDB6B3BF9A0CE2-
-   182 0000020A B6039AD2B1743947D5-
-   182 00000213 EAAF77D29D1526DB04-
-   182 0000021C 8316DC73120B63E384-
-   182 00000225 3B64943E6A6D0DA85A-
-   182 0000022E 6A7A0BCF0EE49DFF09-
-   182 00000237 9327AE000AB19E077D-
-   182 00000240 44930FF0D2A3088768-
-   182 00000249 F2011EFEC206695D57-
-   182 00000252 62F7CB67658071366C-
-   182 0000025B 19E7066B6E761BD4FE-
-   182 00000264 E02BD3895A7ADA10CC-
-   182 0000026D 4ADD676FDFB9F9F9EF-
-   182 00000276 BE8E43BEB717D58EB0-
-   182 0000027F 60E8A3D6D67E93D1A1-
-   182 00000288 C4C2D83852F2DF4FF1-
-   182 00000291 67BBD16757BCA6DD06-
-   182 0000029A B53F4B36B248DA2B0D-
-   182 000002A3 D84C1B0AAFF64A0336-
-   182 000002AC 607A0441C3EF60DF55-
-   182 000002B5 DF67A8EF8E6E3179BE-
-   182 000002BE 69468CB361CB1A8366-
-   182 000002C7 BCA0D26F2536E26852-
-   182 000002D0 95770CCC03470BBBB9-
-   182 000002D9 1602222F260555BE3B-
-   182 000002E2 BAC5280BBDB2925AB4-
-   182 000002EB 2B046AB35CA7FFD7C2-
-   182 000002F4 31CFD0B58B9ED92C1D-
-   182 000002FD AEDE5BB0C2649B26F2-
-   182 00000306 63EC9CA36A750A936D-
-   182 0000030F 02A906099C3F360EEB-
-   182 00000318 856707721357000582-
-   182 00000321 4ABF95147AB8E2AE2B-
-   182 0000032A B17B381BB60C9B8ED2-
-   182 00000333 920DBED5E5B7EFDC7C-
-   182 0000033C 21DFDB0BD4D2D38642-
-   182 00000345 E2D4F1F8B3DD686E83-
-   182 0000034E DA1FCD16BE815B26B9-
-   182 00000357 F6E177B06F7747B718-
-   182 00000360 E65A0888706A0FFFCA-
-   182 00000369 3B06665C0B0111FF9E-
-   182 00000372 658F69AE62F8D3FF6B-
-   182 0000037B 6145CF6C1678E20AA0-
-   182 00000384 EED20DD75483044EC2-
-   182 0000038D B30339612667A7F716-
-   182 00000396 60D04D476949DB776E-
-   182 0000039F 3E4A6AD1AEDC5AD6D9-
-   182 000003A8 660BDF40F03BD83753-
-   182 000003B1 AEBCA9C59EBBDE7FCF-
-   182 000003BA B247E9FFB5301CF2BD-
-   182 000003C3 BD8AC2BACA3093B353-
-   182 000003CC A6A3B4240536D0BA93-
-   182 000003D5 06D7CD2957DE54BF67-
-   182 000003DE D9232E7A66B3B84A61-
-   182 000003E7 C4021B685D942B6F2A-
-   182 000003F0 37BE0BB4A18E0CC31B-
-   182 000003F9 DF055A8DEF022D     
-   183                                   
-   184                                  ;================================================ 
+    89                                  ;------------------------------------------------
+    90                                  
+    91                                      ;     mov eax, 0FFFFFFFFh             ; start value of crc
+    92                                      ;     xor rcx, rcx                    ; counter for data
+    93                                  
+    94                                      ; .loop:
+    95                                      ;     cmp esi, 0                      ; while size != 0
+    96                                      ;     je .ret
+    97                                      ;     dec esi 
+    98                                  
+    99                                      ;     mov r10b, byte [rdi + rcx]
+   100                                      ;     inc rcx 
+   101                                  
+   102                                      ;     crc32 eax, r10b
+   103                                      ;     jmp .loop
+   104                                  
+   105                                      ; .ret:
+   106                                      ;     not rax 
+   107                                      ;     ret 
+   108                                  
+   109                                  
+   110                                  ;================================================
+   111                                  
+   112                                  ; ZIX_API uint32_t
+   113                                  ; zix_digest_add(uint32_t hash, const void* const buf, const size_t len)
+   114                                  ; {
+   115                                  ; 	const uint8_t* str = (const uint8_t*)buf;
+   116                                  ; #ifdef __SSE4_2__
+   117                                  ; 	// SSE 4.2 CRC32
+   118                                  ; 	for (size_t i = 0; i < (len / sizeof(uint32_t)); ++i) {
+   119                                  ; 		hash = _mm_crc32_u32(hash, *(const uint32_t*)str);
+   120                                  ; 		str += sizeof(uint32_t);
+   121                                  ; 	}
+   122                                  ; 	if (len & sizeof(uint16_t)) {
+   123                                  ; 		hash = _mm_crc32_u16(hash, *(const uint16_t*)str);
+   124                                  ; 		str += sizeof(uint16_t);
+   125                                  ; 	}
+   126                                  ; 	if (len & sizeof(uint8_t)) {
+   127                                  ; 		hash = _mm_crc32_u8(hash, *(const uint8_t*)str);
+   128                                  ; 	}
+   129                                  ; #else
+   130                                  ; 	// Classic DJB hash
+   131                                  ; 	for (size_t i = 0; i < len; ++i) {
+   132                                  ; 		hash = (hash << 5) + hash + str[i];
+   133                                  ; 	}
+   134                                  ; #endif
+   135                                  ; 	return hash;
+   136                                  ; }
+   137                                  
+   138                                  ;================================================
+   139                                  
+   140                                  section .data 
+   141                                  
+   205 00000000 00000000963007772C-     crc32_look_up: dd 0, 0x77073096, 0xEE0E612C, 0x990951BA,          0x076DC419, 0x706AF48F, 0xE963A535, 0x9E6495A3,          0x0EDB8832, 0x79DCB8A4, 0xE0D5E91E, 0x97D2D988,          0x09B64C2B, 0x7EB17CBD, 0xE7B82D07, 0x90BF1D91,          0x1DB71064, 0x6AB0
+   205 00000009 610EEEBA51099919C4-
+   205 00000012 6D078FF46A7035A563-
+   205 0000001B E9A395649E3288DB0E-
+   205 00000024 A4B8DC791EE9D5E088-
+   205 0000002D D9D2972B4CB609BD7C-
+   205 00000036 B17E072DB8E7911DBF-
+   205 0000003F 906410B71DF220B06A-
+   205 00000048 4871B9F3DE41BE847D-
+   205 00000051 D4DA1AEBE4DD6D51B5-
+   205 0000005A D4F4C785D38356986C-
+   205 00000063 13C0A86B647AF962FD-
+   205 0000006C ECC9658A4F5C0114D9-
+   205 00000075 6C0663633D0FFAF50D-
+   205 0000007E 088DC8206E3B5E1069-
+   205 00000087 4CE44160D5727167A2-
+   205 00000090 D1E4033C47D4044BFD-
+   205 00000099 850DD26BB50AA5FAA8-
+   205 000000A2 B5356C98B242D6C9BB-
+   205 000000AB DB40F9BCACE36CD832-
+   205 000000B4 755CDF45CF0DD6DC59-
+   205 000000BD 3DD1ABAC30D9263A00-
+   205 000000C6 DE518051D7C81661D0-
+   205 000000CF BFB5F4B42123C4B356-
+   205 000000D8 9995BACF0FA5BDB89E-
+   205 000000E1 B802280888055FB2D9-
+   205 000000EA 0CC624E90BB1877C6F-
+   205 000000F3 2F114C6858AB1D61C1-
+   205 000000FC 3D2D66B69041DC7606-
+   205 00000105 71DB01BC20D2982A10-
+   205 0000010E D5EF8985B1711FB5B6-
+   205 00000117 06A5E4BF9F33D4B8E8-
+   205 00000120 A2C9077834F9000F8E-
+   205 00000129 A8099618980EE1BB0D-
+   205 00000132 6A7F2D3D6D08976C64-
+   205 0000013B 91015C63E6F4516B6B-
+   205 00000144 62616C1CD83065854E-
+   205 0000014D 0062F2ED95066C7BA5-
+   205 00000156 011BC1F4088257C40F-
+   205 0000015F F5C6D9B06550E9B712-
+   205 00000168 EAB8BE8B7C88B9FCDF-
+   205 00000171 1DDD62492DDA15F37C-
+   205 0000017A D38C654CD4FB5861B2-
+   205 00000183 4DCE51B53A7400BCA3-
+   205 0000018C E230BBD441A5DF4AD7-
+   205 00000195 95D83D6DC4D1A4FBF4-
+   205 0000019E D6D36AE96943FCD96E-
+   205 000001A7 34468867ADD0B860DA-
+   205 000001B0 732D0444E51D03335F-
+   205 000001B9 4C0AAAC97C0DDD3C71-
+   205 000001C2 0550AA41022710100B-
+   205 000001CB BE86200CC925B56857-
+   205 000001D4 B3856F2009D466B99F-
+   205 000001DD E461CE0EF9DE5E98C9-
+   205 000001E6 D9292298D0B0B4A8D7-
+   205 000001EF C7173DB359810DB42E-
+   205 000001F8 3B5CBDB7AD6CBAC020-
+   205 00000201 83B8EDB6B3BF9A0CE2-
+   205 0000020A B6039AD2B1743947D5-
+   205 00000213 EAAF77D29D1526DB04-
+   205 0000021C 8316DC73120B63E384-
+   205 00000225 3B64943E6A6D0DA85A-
+   205 0000022E 6A7A0BCF0EE49DFF09-
+   205 00000237 9327AE000AB19E077D-
+   205 00000240 44930FF0D2A3088768-
+   205 00000249 F2011EFEC206695D57-
+   205 00000252 62F7CB67658071366C-
+   205 0000025B 19E7066B6E761BD4FE-
+   205 00000264 E02BD3895A7ADA10CC-
+   205 0000026D 4ADD676FDFB9F9F9EF-
+   205 00000276 BE8E43BEB717D58EB0-
+   205 0000027F 60E8A3D6D67E93D1A1-
+   205 00000288 C4C2D83852F2DF4FF1-
+   205 00000291 67BBD16757BCA6DD06-
+   205 0000029A B53F4B36B248DA2B0D-
+   205 000002A3 D84C1B0AAFF64A0336-
+   205 000002AC 607A0441C3EF60DF55-
+   205 000002B5 DF67A8EF8E6E3179BE-
+   205 000002BE 69468CB361CB1A8366-
+   205 000002C7 BCA0D26F2536E26852-
+   205 000002D0 95770CCC03470BBBB9-
+   205 000002D9 1602222F260555BE3B-
+   205 000002E2 BAC5280BBDB2925AB4-
+   205 000002EB 2B046AB35CA7FFD7C2-
+   205 000002F4 31CFD0B58B9ED92C1D-
+   205 000002FD AEDE5BB0C2649B26F2-
+   205 00000306 63EC9CA36A750A936D-
+   205 0000030F 02A906099C3F360EEB-
+   205 00000318 856707721357000582-
+   205 00000321 4ABF95147AB8E2AE2B-
+   205 0000032A B17B381BB60C9B8ED2-
+   205 00000333 920DBED5E5B7EFDC7C-
+   205 0000033C 21DFDB0BD4D2D38642-
+   205 00000345 E2D4F1F8B3DD686E83-
+   205 0000034E DA1FCD16BE815B26B9-
+   205 00000357 F6E177B06F7747B718-
+   205 00000360 E65A0888706A0FFFCA-
+   205 00000369 3B06665C0B0111FF9E-
+   205 00000372 658F69AE62F8D3FF6B-
+   205 0000037B 6145CF6C1678E20AA0-
+   205 00000384 EED20DD75483044EC2-
+   205 0000038D B30339612667A7F716-
+   205 00000396 60D04D476949DB776E-
+   205 0000039F 3E4A6AD1AEDC5AD6D9-
+   205 000003A8 660BDF40F03BD83753-
+   205 000003B1 AEBCA9C59EBBDE7FCF-
+   205 000003BA B247E9FFB5301CF2BD-
+   205 000003C3 BD8AC2BACA3093B353-
+   205 000003CC A6A3B4240536D0BA93-
+   205 000003D5 06D7CD2957DE54BF67-
+   205 000003DE D9232E7A66B3B84A61-
+   205 000003E7 C4021B685D942B6F2A-
+   205 000003F0 37BE0BB4A18E0CC31B-
+   205 000003F9 DF055A8DEF022D     
+   206                                   
+   207                                  ;================================================ 

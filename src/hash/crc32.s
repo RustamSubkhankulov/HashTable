@@ -31,7 +31,7 @@ my_hash:
         ;xor r10, r10
         ;
         mov r10d, dword [rdi]
-        crc32 rax, r10
+        crc32 eax, r10d
         add rdi, 4
         dec r11d
 
@@ -40,22 +40,24 @@ my_hash:
         and r11d, 2
         jz .crc8
 
-        movzx r10, word [rdi]
-        crc32 rax, r10
+        movzx r10d, word [rdi]
+        crc32 eax, r10d
         add rdi, 2
 
     .crc8:
         and esi, 1
         jz .ret
 
-        movzx r10, byte [rdi]
-        crc32 rax, r10
+        movzx r10d, byte [rdi]
+        crc32 eax, r10d
 
     .ret:
         not eax
         ret 
 
-    ;     mov rax, 0FFFFFFFFh             ; start value of crc
+;------------------------------------------------
+
+    ;     mov eax, 0FFFFFFFFh             ; start value of crc
     ;     xor rcx, rcx                    ; counter for data
 
     ; .loop:
@@ -63,20 +65,41 @@ my_hash:
     ;     je .ret
     ;     dec esi 
 
-    ;     mov r9, rax                     ; 
-    ;     shr r9, 8                       ; crc >> 8
+    ;     mov r9d, eax                    ; 
+    ;     shr r9d, 8                      ; crc >> 8
 
-    ;     movzx rdx, al                   ; lower byte crc
+    ;     mov edx, eax                    ; lower byte crc
     ;     ;and rdx, byte [crc32_look_up + 4 * rcx]
     ;                                     ; rdx = rdx ^ *(data)
-    ;     movzx rax, byte [rdi + rcx]
+    ;     movzx eax, byte [rdi + rcx]
     ;     inc rcx                         ; data++
 
-    ;     xor rax, rdx
-    ;     mov rax, [crc32_look_up + 4 * rax]
+    ;     xor eax, edx
+    ;     and eax, 0xFF
+    ;     mov eax, [crc32_look_up + 4 * eax]
     ;                                     ; value form crc look up table        
         
-    ;     xor rax, r9
+    ;     xor eax, r9d
+    ;     jmp .loop
+
+    ; .ret:
+    ;     not rax 
+    ;     ret 
+
+;------------------------------------------------
+
+    ;     mov eax, 0FFFFFFFFh             ; start value of crc
+    ;     xor rcx, rcx                    ; counter for data
+
+    ; .loop:
+    ;     cmp esi, 0                      ; while size != 0
+    ;     je .ret
+    ;     dec esi 
+
+    ;     mov r10b, byte [rdi + rcx]
+    ;     inc rcx 
+
+    ;     crc32 eax, r10b
     ;     jmp .loop
 
     ; .ret:

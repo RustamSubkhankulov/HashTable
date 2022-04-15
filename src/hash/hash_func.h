@@ -20,6 +20,6 @@ uint32_t ascii_sum_hash  (void* data, unsigned int size);
 
 uint32_t rol_hash        (void* data, unsigned int size);
 
-//uint32_t my_hash         (void* data, unsigned int size);
+uint32_t crc32_hash      (void* data, unsigned int size);
 
 //===============================================
