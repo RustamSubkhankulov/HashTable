@@ -403,6 +403,7 @@ int _hash_table_search(Hash_table* hash_table, elem_t elem, unsigned int size,
     *list = &hash_table->data[hash_value % hash_table->capacity];
 
     return list_search_asm(*list, elem);
+
     //unsigned int index = 0;
 
     // asm(".intel_syntax noprefix         \n"
@@ -737,54 +738,57 @@ int _hash_table_stress_test(const char* src, uint32_t (*hash_func) (void*, unsig
 
     clock_t start_time = clock();
 
-    // Insert
+    int index = 0;
 
     for (unsigned long long counter = 0;
                             counter < hamlet->number;
                             counter++)
     {
-        ret_val = hash_table_smart_insert(hash_table, hamlet->tokens[counter].data, 
-                                                      hamlet->tokens[counter].len, 
-                                                      &list);
+        // hash_table_search
+
+        const char* data = hamlet->tokens[counter].data;
+        uint32_t hash_value = (hash_table->hash_func) ((void*) data, 
+                                                                   hamlet->tokens[counter].len);
+        list = &hash_table->data[hash_value % hash_table->capacity];
+
+        ret_val = list_search_asm(list, data);
+
+        if (ret_val == -1)
+            return -1;
+            
+        if (ret_val == ELEMENT_NOT_FOUND)
+        {
+            // hash_table_insert
+            hash_table->size += 1;
+            ret_val = list_push_back(list, data);
+        }
+
+        // ret_val = hash_table_smart_insert(hash_table, hamlet->tokens[counter].data, 
+        //                                               hamlet->tokens[counter].len, 
+        //                                               &list);
 
         if (ret_val == -1)
             return -1;
     }
 
-    // clock_t gap_start = clock();
-
-    // #ifdef HASH_LOGS
-
-    //     ret_val = hash_table_dump(hash_table, logs_file);
-    //     if (ret_val == -1) return -1;
-
-    // #endif 
-
-    // clock_t gap = clock() - gap_start;
-
     // Search and delete
+
+    int err = 0;
 
     for (unsigned long long counter = 0;
                             counter < hamlet->number;
                             counter++)
     {
-        //fprintf(stderr, "data %s \n ", hamlet->tokens[counter].data);
-
         for (unsigned int search_ct = 0;
                           search_ct < 128;
                           search_ct++)
         {
             const char* data = hamlet->tokens[counter].data;
-
             uint32_t hash_value = (hash_table->hash_func) ((void*) data, 
                                                                    hamlet->tokens[counter].len);
             list = &hash_table->data[hash_value % hash_table->capacity];
 
             ret_val = list_search_asm(list, data);
-
-            // ret_val = hash_table_search(hash_table, hamlet->tokens[counter].data, 
-            //                                         hamlet->tokens[counter].len, 
-            //                                         &list);
 
             if (ret_val == -1)
                 return -1;
@@ -794,8 +798,15 @@ int _hash_table_stress_test(const char* src, uint32_t (*hash_func) (void*, unsig
         if (ret_val == ELEMENT_NOT_FOUND)
             continue;
 
-        ret_val = hash_table_delete(hash_table, ret_val, list);
-        if (ret_val == -1) return -1;
+        // hash_table_delete
+
+        hash_table->size -= 1;
+
+        list_pop_by_index(list, ret_val, &err);
+        if (err == -1) return -1;
+
+        // ret_val = hash_table_delete(hash_table, ret_val, list);
+        // if (ret_val == -1) return -1;
     }
 
     clock_t overall_time = clock() - start_time;
