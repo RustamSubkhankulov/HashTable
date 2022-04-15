@@ -36,7 +36,7 @@ for graph_ct in range (number):
     # bins = 10
     # rang = (0, number)
 
-    plt.bar(x, y, width = 1)
+    plt.bar(x, y, width = 1.1)
 
     plt.xlabel('list number')
     plt.ylabel('number of elements')
