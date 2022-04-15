@@ -403,6 +403,70 @@ int _hash_table_search(Hash_table* hash_table, elem_t elem, unsigned int size,
     *list = &hash_table->data[hash_value % hash_table->capacity];
 
     return list_search_asm(*list, elem);
+    //unsigned int index = 0;
+
+    // asm(".intel_syntax noprefix         \n"
+    //     "cmp %1, 0                      \n"
+    //     "jne .skip1                     \n"
+
+    //     "mov %0, -1                     \n"
+    //     "ret                            \n"
+
+    // ".skip1:                            \n"
+    //     "cmp word [%1 + 48], 0          \n"
+    //     "je .ret_not_found              \n"
+
+    //     "movzx rcx, word [%1 + 48]      \n" 
+    //     "movzx r8 , word [%1 + 24]      \n"
+
+    //     "xor r9, r9                     \n"
+
+    // ".loop:                             \n"
+    //     "cmp r9, rcx                    \n"
+    //     "jge .ret_not_found             \n"
+
+    //     "inc r9                         \n"
+
+    //     "mov r10, %2                    \n"
+
+    //     "mov r11, [%1]                  \n"
+    //     "mov r11, [r11 + 8 * r8]        \n"
+
+    // ".strcmp_loop:                      \n"
+    //     "mov byte dl, [r10]             \n"
+    //     "mov byte al, [r11]             \n"
+
+    //     "inc r10                        \n"
+    //     "inc r11                        \n" 
+
+    //     "cmp dl, 0                      \n" 
+    //     "je .strcmp_stop                \n" 
+
+    //     "cmp dl, al                     \n" 
+    //     "je .strcmp_loop                \n" 
+
+    //     "jmp .next_iter                 \n" 
+
+    // ".strcmp_stop:                      \n"
+    //     "cmp al ,0                      \n" 
+    //     "je .ret_found                  \n" 
+
+    // ".next_iter:                        \n"
+    //     "mov   r10,      [%1 + 8]       \n"
+    //     "movzx r8 , word [r10 + 4 * r8] \n" 
+
+    //     "jmp .loop                      \n"
+
+    // ".ret_found:                        \n"
+    //     "mov %0, r8                     \n"
+    //     "ret                            \n"
+    //     ".att_syntax noprefix           \n"  
+
+    //     : "=r" (index) 
+    //     : "r"  (*list), "r" (size)
+    //     : "rcx", "r8", "r9", "r10", "r11", "rax", "rdx");
+
+    //return index;
 }
 
 //-----------------------------------------------
