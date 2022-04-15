@@ -42,6 +42,10 @@ struct Hamlet
 
 //===================================================================
 
+//#define IS_ALPHA(ch) ( (ch > 'a' && ch < 'z') || (ch > 'A' && ch < 'Z') )
+
+//===================================================================
+
 int _hamlet_init(struct Hamlet* hamlet, const char* filename 
 									 FOR_LOGS(, LOG_PARAMS));
 
