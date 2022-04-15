@@ -768,10 +768,22 @@ int _hash_table_stress_test(const char* src, uint32_t (*hash_func) (void*, unsig
                             counter < hamlet->number;
                             counter++)
     {
+        //fprintf(stderr, "data %s \n ", hamlet->tokens[counter].data);
+
         for (unsigned int search_ct = 0;
                           search_ct < 128;
                           search_ct++)
         {
+            // List* list = NULL;
+
+            // const char* data = hamlet->tokens[counter].data;
+
+            // uint32_t hash_value = (hash_table->hash_func) ((void*) data, 
+            //                                                        hamlet->tokens[counter].len);
+            // list = &hash_table->data[hash_value % hash_table->capacity];
+
+            // ret_val = list_search_asm(list, data);
+
             ret_val = hash_table_search(hash_table, hamlet->tokens[counter].data, 
                                                     hamlet->tokens[counter].len, 
                                                     &list);

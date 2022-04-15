@@ -222,7 +222,7 @@ static int _hamlet_split(Hamlet* hamlet FOR_LOGS(, LOG_PARAMS))
 	int ret_val = hamlet_count_entities(hamlet);
 	if (ret_val == -1) return -1;
 
-	hamlet->tokens = (Token*) calloc(hamlet->number, sizeof(Token));
+	hamlet->tokens = (Token*) calloc(hamlet->number + 1, sizeof(Token));
 	if (!hamlet->tokens) return -1;
 
 	#ifdef SPLIT_IN_WORDS

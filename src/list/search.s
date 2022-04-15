@@ -24,11 +24,11 @@ list_search_asm:
         ret
 
     .skip1:
-        cmp word [rdi + 48], 0          ; if size of list is 0
+        cmp dword [rdi + 48], 0         ; if size of list is 0
         je .ret_not_found               ; then return -2;
 
-        movzx rcx, word [rdi + 48]      ; max ct = list->size
-        movzx r8 , word [rdi + 24]      ; r8 = list->head = cur_index
+        mov ecx, dword [rdi + 48]      ; max ct = list->size
+        mov r8d, dword [rdi + 24]      ; r8 = list->head = cur_index
 
         xor r9, r9                      ; counter
 
@@ -63,8 +63,8 @@ list_search_asm:
         je .ret_found                   ; iterate to next compare
 
     .next_iter:
-        mov   r10,      [rdi + 8]       ; r10 = list->next
-        movzx r8 , word [r10 + 4 * r8]  ; r8 = list->next[cur_index]
+        mov r10,       [rdi + 8]        ; r10 = list->next
+        mov r8d, dword [r10 + 4 * r8]   ; r8 = list->next[cur_index]
 
         jmp .loop
     .ret_found:
