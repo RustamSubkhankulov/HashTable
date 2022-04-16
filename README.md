@@ -29,6 +29,8 @@ In the cycle firstly added words to hash table, then I recorded sizes of lists i
 
 Size of hash table were fixed during tests and it was equal 4096
 
+By the size of lists in hash table we can get information how frequently hash collisions are happening
+
 Data, used for making plots are here: [/text_files/res.txt](https://github.com/RustamSubkhankulov/HashTable/blob/master/text_files/res.txt "data")
 
 <h3> List of compared functions: </h3>
@@ -168,6 +170,33 @@ Let's replace hash functions with its assembly version and measure performance t
 
 Performance increased by about 16%. Good result, let's move on
 
-<h4> Step 3. Assembly list search function </h4?
+<h4> Step 3. Assembly list search function </h4>
   
+As next step I rewrote <code> _list_search </code> functions in assebmly anr replaced with it its C version.
+In pictures you can see assembly version of list search. Original function 
+[here](https://github.com/RustamSubkhankulov/HashTable/blob/master/src/list/list.cpp "list.cpp")
+
+Important to note, that I made some optimizations in assembly version of lsit search. I decreased number of memory accesses and removed call of standart function <code> strlen </code>.
+
+![list_asm2](/pictures/screenshots/list_asm1.png "list search asm")
+![list_asm1](/pictures/screenshots/list_asm2.png "list search asm")
+
+Here are results:
+
+|       | 1    | 2    | 3    | 4    | 5    | AVERAGE |
+|-------|------|------|------|------|------|---------|
+| TOTAL | 2,79 | 2,67 | 2,63 | 2,66 | 2,62 | 2,67    |
+| TEST  | 2,67 | 2,55 | 2,54 | 2,54 | 2,54 | 2,57    |
+
+Comapring to version with no optimization flags, we increased performance by 207% and have already exceeded -O3 optimization.
+
+<h4> Step 4. Improve hash function </h4> 
+
+At 4th step of my optimizations I decided to use intel instruction <code> crc32 </code>, made specially for calculating crc32 hash. 
+
+New version of 
+
+![crc32](/pictures/screenshots/crc32.png "crc32 asm")
+
+Test results:
 
