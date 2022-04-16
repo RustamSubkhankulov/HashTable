@@ -145,3 +145,14 @@ Also important thing to note that I tried to optimize only 'stress test function
 <h3> Optimizations </h3>
 
 <h4> Step 1. Profiler </h4>
+
+I used callgrind tool from valgrind to collect profiling info and kcachegrind to examine it. This is profiler's output for the very first version without any optimizations:
+
+![no opt profiler](/pictures/screenshots/noopt.png "no opt profiler data")
+
+Most frquently called functions are <code> _list_search </code>, <code> my_hash </code> (crc32 hash algorithm) and <code> _strcmp_avx2 </code>. Their execution time takes up most of program execution time. These functions will be optimized firstly.
+
+<h4> Step 2. Assembly hash function </h4>
+
+In picture you can see assembly version of <code> my_hash </code> function. 
+
