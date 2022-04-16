@@ -154,5 +154,7 @@ Most frquently called functions are <code> _list_search </code>, <code> my_hash 
 
 <h4> Step 2. Assembly hash function </h4>
 
-In picture you can see assembly version of <code> my_hash </code> function. 
+In pictures you can see both C and assembly versions of <code> my_hash </code> function. 
 
+![hash_c](/pictures/screenshots/hash_c.png "my_hash C")
+![hash_asm](/pictures/screenshots/hash_asm.png "my_hash asm")
