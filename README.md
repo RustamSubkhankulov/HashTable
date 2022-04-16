@@ -84,13 +84,24 @@ Dispersion of values of this hash function is better than of previous one, but s
 
 <h4> 5. Rol hash function </h4> 
 
+Here is code of this functions:
 
+  ![code](/pictures/screenshots/rol_hash.png "rol hash")
+  
+And here is plot:
+
+  ![plot #4](/pictures/graph_4.png "rol hash")
+  
+We can see, that this hash function is much better. All values in range are used, although there are some lists filles more than other. It meas that collisions are still happening pretty frequently with some key values
 
 <h4> 6. Crc32 hash function </h4> 
 
-//pict here
+  ![plot #5](/pictures/graph_5.png "crc32 hash")
+  
+This hash functions is even better. Less high values of list sizes means that values in range of hash function are equiprobable, as it has to be with ideal hash function.
 
 <h3> Analysis </h4>
+
 
 
 Second part. Optimizing performance
