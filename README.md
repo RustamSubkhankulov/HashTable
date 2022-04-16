@@ -154,5 +154,20 @@ Most frquently called functions are <code> _list_search </code>, <code> my_hash 
 
 <h4> Step 2. Assembly hash function </h4>
 
-In picture you can see assembly version of <code> my_hash </code> function. 
+In pictures you can see both C and assembly versions of <code> my_hash </code> function. 
+
+![hash_c](/pictures/screenshots/hash_c.png "my_hash C")
+![hash_asm](/pictures/screenshots/hash_asm.png "my_hash asm")
+
+Let's replace hash functions with its assembly version and measure performance time 
+
+|       | 1    | 2    | 3    | 4    | 5    | AVERAGE |
+|-------|------|------|------|------|------|---------|
+| TOTAL | 4.76 | 4.89 | 4.79 | 4.71 | 4.75 | 4.78    |
+| TEST  | 4.66 | 4.76 | 4.66 | 4.62 | 4.63 | 4.67    |
+
+Performance increased by about 16%. Good result, let's move on
+
+<h4> Step 3. Assembly list search function </h4?
+  
 
