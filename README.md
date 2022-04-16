@@ -213,3 +213,5 @@ I used callgrind once again to analyze performance of optimized version.
 
 ![opt_callgrind](/pictures/screenshots/opt_callgrind.png "callgrind results")
 
+As we can see in picture, <code> _hash_table_search </code>, which includes calls of crc32 hash (third place) and list_search (first place), being called a lot of times. We know, that function call prevents any optimizations by compiler and bears the overhead (prologue and epilogue of function call made for creating call frame) Let's optimize program by removing calls of this function, instread of call I will place code of this function where it is called. 
+
