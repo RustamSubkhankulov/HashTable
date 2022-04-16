@@ -44,14 +44,16 @@ for graph_ct in range (number):
     # Saveplot
     plt.savefig('pictures/graph_{}.png'.format(graph_ct))
 
-    y_av = sum(y) / len (y)
-    accum = 0
+    # y_av = sum(y) / len (y)
+    # accum = 0
 
-    for j in range (y_len):
-        accum += pow((y[j] - y_av), 2)
+    # print(y_av)
 
-    print(y_len)
-    print(accum/y_len)
+    # for j in range (y_len):
+    #     accum += pow((y[j] - y_av), 2)
+
+    # print(y_len)
+    # print(accum/y_len)
     
     # Clear plot
     plt.clf()
