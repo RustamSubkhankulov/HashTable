@@ -200,3 +200,16 @@ New version of
 
 Test results:
 
+|       | 1    | 2    | 3    | 4    | 5    | AVERAGE |
+|-------|------|------|------|------|------|---------|
+| TOTAL | 2,28 | 2,27 | 2,27 | 2,24 | 2,27 | 2,27    |
+| TEST  | 2,18 | 2,15 | 2,14 | 2,15 | 2,15 | 2,15    |
+
+Now I've already increased perfomance about by 2,5 times, comparing to -O3 - by 30%
+
+<h4> Step 5. Removing function calls </h4>
+
+I used callgrind once again to analyze performance of optimized version.
+
+![opt_callgrind](/pictures/screenshots/opt_callgrind.png "callgrind results")
+
