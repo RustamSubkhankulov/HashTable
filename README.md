@@ -102,8 +102,46 @@ This hash functions is even better. Less high values of list sizes means that va
 
 <h3> Analysis </h4>
 
+Dispersion values for different hash functions:
 
+| Hash Func   | Dispersion |
+|-------------|------------|
+| one         | 1202909    |
+| first ascii | 35906      |
+| sizeof      | 131952     |
+| ascii sum   | 5077       |
+| rol         | 87         |
+| crc32       | 17         |
+
+We can see, that the best results are shown by crc32 hash function.
 
 Second part. Optimizing performance
 -----------------------------------
 
+<h3> Introduction </h3>
+
+Second part of task - optimizing performance of some tests for hash table
+
+I made test, that taked as input array of structures, containing char* pointer tp word from input text and unsigned int lenght of this string.
+Then it calculates hash value of tokens and ads them to hash table if there were no such words before. Then it 128 times executes hash table search, that includes hash value calculating and list search. Then for each word from array of tokens it searches it once again and deleted from hash table. Aso I added timer, that measures time of this stress test especially. 
+During executing I don't have to calculate lenght of word again, cause it is already known after parsing text into tokens.
+
+For measuring time of executing whole program, I used 'time' linux command. Before any optimizations, I measured time of perfoming programm with different optimization flags of gcc compiler. Here there are:
+
+| Number \ Flags  | No flags | No flags | -O1   | -O1  | -O2   | -O2  | -O3   | -O3  |
+|-----------------|----------|----------|-------|------|-------|------|-------|------|
+| Period          | Total    | Test     | Total | Test | Total | Test | Total | Test |
+| 1               | 5.52     | 5.43     | 2.99  | 2.93 | 2.95  | 2.90 | 2.90  | 2.85 |
+| 2               | 5.47     | 5.39     | 3.00  | 2.95 | 2.97  | 2.91 | 2.89  | 2.84 |
+| 3               | 5.52     | 5.43     | 3.01  | 2.95 | 2.94  | 2.89 | 2.93  | 2.84 |
+| 4               | 5.52     | 5.44     | 2.99  | 2.94 | 2.94  | 2.89 | 2.92  | 2.83 |
+| 5               | 5.60     | 5.51     | 3.00  | 2.94 | 2.95  | 2.89 | 2.90  | 2.84 |
+| Average         | 5.53     | 5.44     | 3.00  | 2.94 | 2.95  | 2.89 | 2.91  | 2.84 |
+
+Input used for test - Oxford Dictionary, [here it is](https://github.com/RustamSubkhankulov/HashTable/blob/master/text_files/oxford.txt)
+
+Also important thing to note that I tried to optimize only 'stress test function', initial processes like parsing input text and etc was not examined and changed with making optimizations.
+
+<h3> Optimizations </h3>
+
+<h4> Step 1. Profiler </h4>
