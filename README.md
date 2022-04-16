@@ -225,4 +225,35 @@ Here are results:
 Comparing with previous version, this optimisation increased performance by almost 11%
 Good results, let's keep this optimisation.
 
+<h4> Final step. Attempt to add fast comapre. </h4>
+
+As next step I used fast version of stcmp in assemnly version of <code> _list_search </code>, using SSE vector instructions. 
+As reference while creating fast version of strcmp I used improved fast version of strcmp by Alex Fog from his website.
+
+Here is code: 
+
+![fastcmp](/pictures/screenshots/fastcmp.png "fast cmp")
+
+Results: 
+
+|       | 1    | 2    | 3    | 4    | 5    | AVERAGE |
+|-------|------|------|------|------|------|---------|
+| TOTAL | 1,97 | 1,99 | 1,98 | 1,98 | 1,99 | 1,98    |
+| TEST  | 1,9  | 1,9  | 1,89 | 1,89 | 1,9  | 1,90    |
+
+This optimization barely brings 2% improvement in performance. This brings me to end of my optimization process. 
+Not to decrease portability and understanding of code. 
+
+RESULTS
+-------
+
+| Number \ Version  | My opt | My opt | -O3   | -O3  |
+|-------------------|--------|--------|-------|------|
+| Period            | Total  | Test   | Total | Test |
+| 1                 | 5.52   |        | 2.90  | 2.85 |
+| 2                 | 5.47   |        | 2.89  | 2.84 |
+| 3                 | 5.52   |        | 2.93  | 2.84 |
+| 4                 | 5.52   |        | 2.92  | 2.83 |
+| 5                 | 5.60   |        | 2.90  | 2.84 |
+| Average           | 5.53   |        | 2.91  | 2.84 |
 
