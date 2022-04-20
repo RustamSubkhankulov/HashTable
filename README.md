@@ -250,14 +250,18 @@ RESULTS
 | Number \ Version  | My opt | My opt | -O3   | -O3  |
 |-------------------|--------|--------|-------|------|
 | Period            | Total  | Test   | Total | Test |
-| 1                 | 5.52   |        | 2.90  | 2.85 |
-| 2                 | 5.47   |        | 2.89  | 2.84 |
-| 3                 | 5.52   |        | 2.93  | 2.84 |
-| 4                 | 5.52   |        | 2.92  | 2.83 |
-| 5                 | 5.60   |        | 2.90  | 2.84 |
-| Average           | 5.53   |        | 2.91  | 2.84 |
+| 1                 | 1.97   | 1.90   | 2.90  | 2.85 |
+| 2                 | 1.99   | 1.90   | 2.89  | 2.84 |
+| 3                 | 1.98   | 1.89   | 2.93  | 2.84 |
+| 4                 | 1.99   | 1.89   | 2.92  | 2.83 |
+| 5                 | 1.98   | 1.90   | 2.90  | 2.84 |
+| Average           | 1.98   | 1.90   | 2.91  | 2.84 |
+
+Increase in efficiency - 2,86 times - almost 300% comparing to No_flags version and about 1,5 times comapring to -O3 optimization
 
 EFFICIENCY COEFF
 ----------------
 
-68%
+Our teacher suggested to calculate 'efficiency coefficient' of out optimizations. Here it is:
+
+Coeff = (increase * 1000) / (number of assebmly instruction written) = 68%
